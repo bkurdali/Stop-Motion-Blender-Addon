@@ -221,14 +221,22 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
     filepath:bpy.props.StringProperty(default="")
 
     def execute(self, context):
+        if not self.filepath:
+            self.report('WARNING', "Save Blend File First")
+            return {'CANCELLED'}
         stop_motion_object = context.object
-        bpy.ops.scene_import.obj(
+        bpy.ops.import_scene.obj(
             filepath=self.filepath, use_split_objects=True,
             use_split_groups=False, use_groups_as_vgroups=True,
             use_image_search=True, split_mode='ON', global_clamp_size=0,
             use_edges=False, use_smooth_groups=False,
             axis_forward='-Y', axis_up='Z')
-        imported_object = bpy.context.selected_objects[0]
+        imported_objects = bpy.context.selected_objects
+        bpy.ops.object.keyframe_stop_motion(use_copy=False)
+        for ob in imported_objects:
+            if ob is not stop_motion_object:
+                bpy.data.objects.remove(ob, do_unlink=True)
+        stop_motion_object.select_set(True)
         return {'FINISHED'}
 
 
@@ -240,17 +248,20 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
     filepath:bpy.props.StringProperty(default="")
 
     def execute(self, context):
+        if not self.filepath:
+            self.report('WARNING', "Save Blend File First")
+            return {'CANCELLED'}
         stop_motion_object = context.object
         modifier = Modifier(stop_motion_object)
         mode = stop_motion_object.mode
-        bpy.ops.object.mode_set('OBJECT')
+        bpy.ops.object.mode_set(mode='OBJECT')
         data = modifier.collection.objects[int_to_str(modifier.index)].data
         stop_motion_object.data = data
         # export obj with the right settings
-        bpy.ops.scene_export.obj(
+        bpy.ops.export_scene.obj(
             filepath=self.filepath,
             check_existing=False, use_selection=True,
-            use_animation=False, use_mesh_modifiers=True, use_edges=False,
+            use_animation=False, use_mesh_modifiers=False, use_edges=False,
             use_smooth_groups=False, use_smooth_groups_bitflags=False,
             use_normals=False, use_uvs=False, use_materials=False,
             use_triangles=False, use_nurbs=False, use_vertex_groups=False,
@@ -259,7 +270,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
             global_scale=1, path_mode='AUTO',
             axis_forward='-Y', axis_up='Z'
             )
-        bpy.ops.object.mode_set(mode)
+        bpy.ops.object.mode_set(mode=mode)
         return {'FINISHED'}
 
 # Mode wrappers
@@ -353,7 +364,7 @@ class StopMotionPanel(bpy.types.Panel):
         )
         del act_mode_item
         row = col.row()
-        row.ui_units_x = 2
+        row.ui_units_x = 200
         row.scale_x = 2
         row.operator(
             OBJECT_OT_keyframe_stop_motion.bl_idname,
@@ -372,16 +383,12 @@ class StopMotionPanel(bpy.types.Panel):
         import_obj = row.operator(
             OBJECT_OT_import_stop_motion_obj.bl_idname,
             text="", icon='FILE')
-        if mod:
-            path = context.blend_data.filepath.replace(
-                ".blend", f"_{int_to_str(mod.index)}.obj")
-            import_obj.filepath = export_obj.filepath = path
+        path = context.blend_data.filepath.replace(
+            ".blend", f"_{ob.name}_frame.obj")
+        import_obj.filepath = export_obj.filepath = path
         # 
         # col.prop(mod.modifier, mod.collection_prop, text="Shape")
-        """
-        col = flow.column()
-        col.label(text="")
-        """
+
 # Menus
 
 def add_object_button(self, context):
