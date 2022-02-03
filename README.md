@@ -7,7 +7,7 @@ Blender Addon for Frame by Frame 3D Animation
 * Render safely in object mode
 * Animation is compatible with base Blender; you don't need the plugin to render or view the animation
 * Simple yet powerful UI
-* Import frames from other Blender meshes or from wavefront .obj files
+* Import and export frames as .obj files
 
 ## Installation
 * Download a .zip release, **or** clone the repository and compress the stop_motion folder in .zip format
@@ -30,8 +30,9 @@ To use the add-on, you need a 3D View, a timeline view, and optionally a dope sh
 The add-on has some special buttons for using direct numerical editing on .obj files (See [srcXor - Art and Computers](https://www.srcxor.org/blog/3d-glitching/) for some background on the awesome practice of 3D Glitching)
 
 * Optionally, you can have a script / text editor visible in your viewport to edit the .obj files directly in blender
-* Use the Export .obj button to edit the current frame as a .obj file
-* Use the Import .obj button to import *any* .obj (not just ones you exported) as the current frame
+* Use the Export .obj button to edit the current frame as a .obj file. It will be saved next to the blend file with the same name, the object name, and the word frame as the filename, e.g. if your file MyProject.blend and the object is Cube, the filename will be MyProject_Cube_frame.obj
+* Now you can edit that file in a text editor (including Blender) to e.g. create "glitch frames"
+* Use the Import .obj button to import *any* .obj (not just ones you exported) as the current frame (caveat you have to name them and place them as above)
 
 ## Modifiers, Transformation Animation, etc.
 **(Warning: a bit technical)** The add-on's core is a geometry nodes modifier that replaces the object data using an integer index and a source collection. So long as the add-on and the collection are intact, simple object mode animation playback works (this is why you don't need the add-on to see or render the animation, just to edit it easily)
