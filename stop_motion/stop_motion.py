@@ -141,18 +141,21 @@ class OBJECT_OT_add_stop_motion(bpy.types.Operator):
             c.objects.unlink(first_frame)
         stop_motion_collection.objects.link(first_frame)        
         
-        # Create and Populate Modifier
-        json_path = "modifier.json"
-        # src_path = inspect.getfile(inspect.currentframe())
-        node_group = json_nodes.read_node(
-            "MeshKey", os.path.join(os.path.dirname(__file__), json_path))
-        modifier = stop_motion_object.modifiers.new(MODNAME, 'NODES')
-        modifier.node_group = node_group
+        # Create and Populate Modifiers
+        for name, json_path, modname in (
+                ("MeshKey", "modifier.json", MODNAME),
+                ("Realize", "realizer.json", "Realizer")):
+            node_group = json_nodes.read_node(
+                name, os.path.join(os.path.dirname(__file__), json_path))
+            modifier = stop_motion_object.modifiers.new(modname, 'NODES')
+            modifier.node_group = node_group
+        modifier.show_viewport = modifier.show_in_editmode = False # Don't realize by default
 
         modifier = Modifier(stop_motion_object) # for convenient access
         modifier.collection = stop_motion_collection
         modifier.index = 0
         modifier.keyframe_index(context)
+
         return {'FINISHED'}
 
 # Animation Operators
