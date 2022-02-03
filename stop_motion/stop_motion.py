@@ -225,7 +225,7 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
 
     def execute(self, context):
         if not self.filepath:
-            self.report('WARNING', "Save Blend File First")
+            self.report({'WARNING'}, "Save Blend File First")
             return {'CANCELLED'}
         stop_motion_object = context.object
         bpy.ops.import_scene.obj(
@@ -252,7 +252,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
 
     def execute(self, context):
         if not self.filepath:
-            self.report('WARNING', "Save Blend File First")
+            self.report({'WARNING'}, "Save Blend File First")
             return {'CANCELLED'}
         stop_motion_object = context.object
         modifier = Modifier(stop_motion_object)
