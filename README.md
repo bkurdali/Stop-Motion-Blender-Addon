@@ -38,8 +38,18 @@ The add-on has some special buttons for using direct numerical editing on .obj f
 **(Warning: a bit technical)** The add-on's core is a geometry nodes modifier that replaces the object data using an integer index and a source collection. So long as the add-on and the collection are intact, simple object mode animation playback works (this is why you don't need the add-on to see or render the animation, just to edit it easily)
 
 * Since the object itself is just a Blender object that doesn't get switched out per frame, any object properties including transformations are fine to animate
+
+To Enable the following make sure you read the **Performance and Modifiers** section
+
 * You can even animate the mesh data as usual (for example, shape key animation) - of course, **that's only going to work for the frame that has that particular mesh on it**
 * You can stack any modifiers on top of the base stop motion add on (just treat it like the original mesh data) and it *should* work just fine.
 * You can even rig / use rigged meshes for some frames (Not tested yet though)
 * Theoretically, you should be able to e.g. animate weight painting (frame by frame) and change how the modifiers behave
+
+## Performance and Modifiers
+
+For modifiers that need geometry to work (aka really all of them) we need actual meshes to come out of the first (MeshKey) modifier. However, this becomes unbearably slow on large meshes, so the modifier only outputs instances.
+
+To Enable using the modifier stack there is a second modifier on top of the MeshKey / Stop Motion one - this modifier takes the instance from the previous step and 'realizes it' allowing the rest of the stack to function. Because of performance, it's desabled by default in Edit Mode and in the Viewport - though it works on render. To see e.g. a subsurf in the viewport, you must enable it in viewport by going to the modifier stack and checking the "monitor" shaped button.
+
 
