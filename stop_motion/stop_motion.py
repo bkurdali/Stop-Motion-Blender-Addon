@@ -230,7 +230,7 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
             use_split_groups=False, use_groups_as_vgroups=True,
             use_image_search=True, split_mode='ON', global_clamp_size=0,
             use_edges=False, use_smooth_groups=False,
-            axis_forward='-Y', axis_up='Z')
+            axis_forward='Y', axis_up='Z')
         imported_objects = bpy.context.selected_objects
         bpy.ops.object.keyframe_stop_motion(use_copy=False)
         for ob in imported_objects:
@@ -268,7 +268,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
             use_blen_objects=True, group_by_object=False,
             group_by_material=False, keep_vertex_order=True,
             global_scale=1, path_mode='AUTO',
-            axis_forward='-Y', axis_up='Z'
+            axis_forward='Y', axis_up='Z'
             )
         bpy.ops.object.mode_set(mode=mode)
         return {'FINISHED'}
