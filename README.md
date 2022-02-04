@@ -17,6 +17,13 @@ Blender Addon for Frame by Frame 3D Animation
 * Press Enter
 * Back in the Preferences window, make sure you check the box next to the add-on name to enable it
 
+## Preferences
+Expand the (enabled) Addon box to see the Addon Preferences. Currently there's only one "Frame Offset" which works as follows:
+* If you enter zero there is not change in functionality from 'stock' Blender
+* If you enter 1 or more, It will change the behavior of the UP Arrow (Jump to next Keyframe button), as follows:
+ - If there is a next keyframe, the button works as usual, no change
+ - If there is no next keyframe, blender will go forward the number of frames you specified and **insert** a new keyframe - useful for straight-ahead or blocking animation
+
 ## Basic Usage
 To use the add-on, you need a 3D View, a timeline view, and optionally a dope sheet or other editors.
 
@@ -24,6 +31,7 @@ To use the add-on, you need a 3D View, a timeline view, and optionally a dope sh
 * Click on the animation tab in the sidebar to reveal the add-on, the UI should all be visible in the Stomp Panel
 * Select an object (make sure it is active), then press + Initialize in the panel header
 * To insert a new "drawing" or key frame, press the + (New Frame) button
+* The up arrow key has been subtly changed: It jumps to the next available keyframe as before, but **if** you are animating a stop motion object, once you are at the end of your keys, it will jump a specified number of frames forward and then add a new key. This is a great time-saver for straight-ahead or blocking animation
 * Use the mode switcher in the header for any sub-object modes, to ensure the viewport updates
 
 ## Wavefront OBJ IO
