@@ -20,7 +20,7 @@
 bl_info = {
     "name": "Stop Motion",
     "author": "Bassam Kurdali",
-    "version": (0, 2),
+    "version": (0, 3),
     "blender": (3, 00, 0),
     "location": "View3D > Add > Stop Motion Object",
     "description": "Turns Blender into a Virtual Stop Motion Studio",
@@ -42,8 +42,10 @@ TODO
 if "bpy" in locals():
     import importlib
     importlib.reload(stop_motion)
+    importlib.reload(preferences)
 else:
     from . import stop_motion
+    from . import preferences
 
 import bpy
 
@@ -58,6 +60,7 @@ def stop_motion_manual_map():
 
 
 def register():
+    preferences.register()
     stop_motion.register()
     bpy.utils.register_manual_map(stop_motion_manual_map)
 
@@ -65,6 +68,7 @@ def register():
 def unregister():
     bpy.utils.unregister_manual_map(stop_motion_manual_map)
     stop_motion.unregister()
+    preferences.unregister()
 
 
 if __name__ == "__main__":

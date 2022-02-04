@@ -20,8 +20,10 @@
 if "bpy" in locals():
     import importlib
     importlib.reload(json_nodes)
+    importlib.reload(preferences)
 else:
     from . import json_nodes
+    from . import preferences
 
 import bpy
 import os
@@ -73,24 +75,39 @@ class Modifier():
     def collection(self, value):
         self.modifier[self.__collection__] = value
 
-    def keyframe_index(self, context):
-        """ Insert a Keyframe at the current frame on the index prop """
-
-        self.modifier.keyframe_insert(f'["{self.__index__}"]')
-
-        # Now make sure it is constant
+    def get_fcurve(self):
         action = self.modifier.id_data.animation_data.action
         fcurves = (
             f for f in action.fcurves
             if f.data_path == f'modifiers["{self.modifier.name}"]["{self.__index__}"]' and f.array_index == 0
             )
         for fcurve in fcurves:
-            keyframes = (
-                k for k in fcurve.keyframe_points
-                if abs(k.co[0] - context.scene.frame_current) <= .001
-                )
-            for keyframe in keyframes:
-                keyframe.interpolation = 'CONSTANT'
+            return fcurve
+
+    def keyframe_index(self, context):
+        """ Insert a Keyframe at the current frame on the index prop """
+
+        self.modifier.keyframe_insert(f'["{self.__index__}"]')
+
+        # Now make sure it is constant
+        fcurve = self.get_fcurve()
+        if not fcurve:
+            return # TODO error if no keyframe inserted
+        keyframes = (
+            k for k in fcurve.keyframe_points
+            if abs(k.co[0] - context.scene.frame_current) <= .001
+            )
+        for keyframe in keyframes:
+            keyframe.interpolation = 'CONSTANT'
+
+    def future_keys(self, context):
+        fcurve = self.get_fcurve()
+        if not fcurve:
+            return False # Technically this should be an error
+        frame = context.scene.frame_current
+        for keyframe in (k.co[0] for k in fcurve.keyframe_points if k.co[0] > frame):
+            return True
+        return False
 
 
 def int_to_str(index):
@@ -212,6 +229,29 @@ class OBJECT_OT_keyframe_stop_motion(StopMotionOperator):
         insert_keyframe(context, None, use_copy=True)
         return {'FINISHED'}
 
+
+class SCREEN_OT_next_or_add_key(bpy.types.Operator):
+    """Goto next available keyframe, add one if unavailable"""
+    bl_idname = "screen.next_or_keyframe_stop_motion"
+    bl_label = "Go to next available keyframe or add a new one"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    frame_offset: bpy.props.IntProperty(default=0, min=0, soft_min=1, max=100)
+    use_copy: bpy.props.BoolProperty(default=True)
+
+    first_run = True
+
+    def execute(self, context):
+        if SCREEN_OT_next_or_add_key.first_run:
+            SCREEN_OT_next_or_add_key.first_run = False
+            preferences = context.preferences.addons[__package__].preferences
+            self.frame_offset = preferences.frame_offset
+        obj = context.object
+        modifier = Modifier(obj)
+        if self.frame_offset == 0 or not modifier or modifier.future_keys(context):
+            return bpy.ops.screen.keyframe_jump()
+        context.scene.frame_set(context.scene.frame_current + self.frame_offset)
+        return bpy.ops.object.keyframe_stop_motion(use_copy=self.use_copy)
 
 # Import / Export
 
@@ -419,6 +459,7 @@ def register():
     bpy.utils.register_class(OBJECT_OT_import_stop_motion_obj)
     bpy.utils.register_class(OBJECT_OT_export_stop_motion_obj)
     bpy.utils.register_class(OBJECT_OT_keyframe_stop_motion) # Insert New Key
+    bpy.utils.register_class(SCREEN_OT_next_or_add_key)
 
     bpy.utils.register_class(StopMotionPanel)
     extend_menus()
@@ -432,9 +473,8 @@ def unregister():
     bpy.utils.unregister_class(OBJECT_OT_stop_motion_mode)
     bpy.utils.unregister_class(OBJECT_OT_import_stop_motion_obj)
     bpy.utils.unregister_class(OBJECT_OT_export_stop_motion_obj)
+    bpy.utils.unregister_class(SCREEN_OT_next_or_add_key)
     bpy.utils.unregister_class(OBJECT_OT_keyframe_stop_motion)
-
-
 
 if __name__ == "__main__":
     register()
