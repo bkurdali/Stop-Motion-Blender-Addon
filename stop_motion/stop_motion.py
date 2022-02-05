@@ -127,7 +127,7 @@ class StopMotionOperator(bpy.types.Operator):
 
 
 class OBJECT_OT_add_stop_motion(bpy.types.Operator):
-    """ Create a new stop motion Object """
+    """Create a new stop motion Object with an initial keyframe"""
     bl_idname = "object.add_stop_motion"
     bl_label = "Add Stop Motion Object"
     bl_options = {'REGISTER', 'UNDO'}
@@ -213,7 +213,7 @@ def insert_keyframe(context, source_data, use_copy=False):
 class OBJECT_OT_keyframe_stop_motion(StopMotionOperator):
     """Add a key drawing/ frame, optionally from selection"""
     bl_idname = "object.keyframe_stop_motion"
-    bl_label = "Keyframe Stop Motion object"
+    bl_label = "New Keyframe"
     
     use_copy: bpy.props.BoolProperty(default=True)
     
@@ -230,10 +230,29 @@ class OBJECT_OT_keyframe_stop_motion(StopMotionOperator):
         return {'FINISHED'}
 
 
+class OBJECT_OT_Join_keyframe_stop_motion(StopMotionOperator):
+    """Join Selected Meshes into a new keyframe"""
+    bl_idname = "object.join_stop_motion"
+    bl_label = "Join Keyframe"
+
+    @classmethod
+    def poll(cls, context):
+        return StopMotionOperator.poll(context) and context.mode == 'OBJECT' and len(context.selected_objects) > 1
+
+    def execute(self, context):
+        stop_motion_object = context.object
+        insert_keyframe(context, None, use_copy=True)
+        mode = stop_motion_object.mode
+        bpy.ops.object.mode_set(mode='OBJECT')
+        bpy.ops.object.join()
+        bpy.ops.object.mode_set(mode=mode)
+        return {'FINISHED'}
+
+
 class SCREEN_OT_next_or_add_key(bpy.types.Operator):
     """Goto next available keyframe, add one if unavailable"""
     bl_idname = "screen.next_or_keyframe_stop_motion"
-    bl_label = "Go to next available keyframe or add a new one"
+    bl_label = "Next/Add Next Keyframe"
     bl_options = {'REGISTER', 'UNDO'}
 
     frame_offset: bpy.props.IntProperty(default=0, min=0, soft_min=1, max=100)
@@ -272,7 +291,7 @@ class SCREEN_OT_next_or_add_key(bpy.types.Operator):
 class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
     """Import obj as a key drawing"""
     bl_idname = "object.import_stop_motion_obj"
-    bl_label = "Import Stop Motion OBJ format"
+    bl_label = "Import OBJ"
 
     filepath:bpy.props.StringProperty(default="")
 
@@ -299,7 +318,7 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
 class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
     """Export current frame as an obj"""
     bl_idname = "object.export_stop_motion_obj"
-    bl_label = "Export Stop Motion OBJ Format"
+    bl_label = "Export OBJ"
 
     filepath:bpy.props.StringProperty(default="")
 
@@ -343,7 +362,7 @@ def update_data(scene):
 
 
 class OBJECT_OT_stop_motion_mode(StopMotionOperator):
-    """ Switch Mode with corrected meshes """
+    """Switch Mode with corrected meshes """
     bl_idname = "object.stop_motion_mode"
     bl_label = "Stop Motion Mode"
     
@@ -453,6 +472,12 @@ class StopMotionPanel(bpy.types.Panel):
         row.scale_x = 2
         row.operator(
             SCREEN_OT_next_or_add_key.bl_idname,text="", icon='NEXT_KEYFRAME')
+        row = col.row()
+        row.ui_units_x = 200
+        row.scale_x = 2
+        row.operator(
+            OBJECT_OT_Join_keyframe_stop_motion.bl_idname,
+            text="", icon='MOD_BOOLEAN')
         # Import / Export
         row = col.row()
         row.ui_units_x = 2
@@ -500,6 +525,7 @@ def register():
     bpy.utils.register_class(OBJECT_OT_export_stop_motion_obj)
     bpy.utils.register_class(OBJECT_OT_keyframe_stop_motion) # Insert New Key
     bpy.utils.register_class(SCREEN_OT_next_or_add_key)
+    bpy.utils.register_class(OBJECT_OT_Join_keyframe_stop_motion)
 
     bpy.utils.register_class(StopMotionPanel)
     extend_menus()
@@ -518,6 +544,7 @@ def unregister():
     bpy.utils.unregister_class(OBJECT_OT_export_stop_motion_obj)
     bpy.utils.unregister_class(SCREEN_OT_next_or_add_key)
     bpy.utils.unregister_class(OBJECT_OT_keyframe_stop_motion)
+    bpy.utils.unregister_class(OBJECT_OT_Join_keyframe_stop_motion)
 
 if __name__ == "__main__":
     register()
