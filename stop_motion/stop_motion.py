@@ -348,10 +348,13 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
     bl_label = "Stop Motion Mode"
     
     mode: bpy.props.EnumProperty(
-        items = [(item, f"{item.replace('_',' ').title()} Mode", item, icon) for item, icon in (
-            ('OBJECT', 'OBJECT_DATAMODE'), ('EDIT', 'EDITMODE_HLT'),
-            ('SCULPT', 'SCULPTMODE_HLT'), ('VERTEX_PAINT', 'VPAINT_HLT'),
-            ('WEIGHT_PAINT', 'MOD_VERTEX_WEIGHT'), ('TEXTURE_PAINT', 'TPAINT_HLT'))],
+        items = [
+            ('OBJECT', 'Object Mode', 'OBJECT', 'OBJECT_DATAMODE', 0),
+            ('EDIT', 'Edit Mode', 'EDIT', 'EDITMODE_HLT', 1),
+            ('SCULPT', 'Sculpt Mode', 'SCULPT', 'SCULPTMODE_HLT', 2),
+            ('VERTEX_PAINT', 'Vertex Paint Mode', 'VERTEX_PAINT', 'VPAINT_HLT', 3),
+            ('WEIGHT_PAINT', 'Weight Paint Mode', 'WEIGHT_PAINT', 'MOD_VERTEX_WEIGHT', 4),
+            ('TEXTURE_PAINT', 'Texture Paint Mode', 'TEXTURE_PAINT', 'TPAINT_HLT', 5)],
         default='OBJECT')
 
     def execute(self, context):
