@@ -20,7 +20,7 @@
 bl_info = {
     "name": "Stop Motion",
     "author": "Bassam Kurdali",
-    "version": (0, 4),
+    "version": (0, 5),
     "blender": (3, 00, 0),
     "location": "View3D > Add > Stop Motion Object",
     "description": "Turns Blender into a Virtual Stop Motion Studio",
@@ -33,13 +33,15 @@ bl_info = {
 TODO
 
 - D key Pie menu
-
-- Create Join to current mesh
+- Make paint mode overlays work again
+- Indicators/Toggles (viewport update/ realize/ update handler/ ?)
+- override tab, ctrl-tab with own operator/pie menu
 
 - Workspace Niceties (Beginner Friendly)
 - Streamline editing in text editor on export?
 - Add Obj Settings to Prefs
 - Error handling
+- Version tags for object, modifier/s (could be used for compatibility)
 - Tests
 """
 

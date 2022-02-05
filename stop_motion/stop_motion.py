@@ -222,7 +222,6 @@ class OBJECT_OT_keyframe_stop_motion(StopMotionOperator):
         possible_sources = (
             o for o in context.selected_objects
             if o is not stop_motion_object and o.type == 'MESH')
-        # TODO maybe we could combine objects into one later?
         for source in possible_sources:
             insert_keyframe(context, source.data, use_copy=self.use_copy)
             return {'FINISHED'} # We only care about 1 selected object
@@ -237,7 +236,9 @@ class OBJECT_OT_Join_keyframe_stop_motion(StopMotionOperator):
 
     @classmethod
     def poll(cls, context):
-        return StopMotionOperator.poll(context) and context.mode == 'OBJECT' and len(context.selected_objects) > 1
+        return (
+            StopMotionOperator.poll(context) and context.mode == 'OBJECT'
+            and len(context.selected_objects) > 1)
 
     def execute(self, context):
         stop_motion_object = context.object
@@ -397,6 +398,68 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
 
 # UI
 
+# Menus
+
+
+def draw_buttons(context, layout, item_func):
+    """ All the Operator Buttons """
+    ob = context.object
+    mod = Modifier(ob)
+    row = item_func(layout)
+    if not mod:
+        row.operator(
+            OBJECT_OT_add_stop_motion.bl_idname,
+            text="", icon='PLUS')
+        return
+    object_mode = ob.mode
+    act_mode_item = bpy.types.Object.bl_rna.properties["mode"].enum_items[object_mode]
+    act_mode_i18n_context = bpy.types.Object.bl_rna.properties["mode"].translation_context
+    row.operator_menu_enum(
+        OBJECT_OT_stop_motion_mode.bl_idname, "mode",
+        text="",
+        icon=act_mode_item.icon,
+    )
+
+    # Keyframing
+    item_func(layout).operator(
+        OBJECT_OT_keyframe_stop_motion.bl_idname,
+        text="", icon='DECORATE_KEYFRAME'
+        ).use_copy = True
+    item_func(layout).operator(
+        SCREEN_OT_next_or_add_key.bl_idname,text="", icon='NEXT_KEYFRAME')
+    item_func(layout).operator(
+        OBJECT_OT_Join_keyframe_stop_motion.bl_idname,
+        text="", icon='MOD_BOOLEAN')
+
+    # Import / Export
+    item_func(layout) # Seperator
+    export_obj = item_func(layout).operator(
+        OBJECT_OT_export_stop_motion_obj.bl_idname,
+        text="", icon='CURRENT_FILE')
+    import_obj = item_func(layout).operator(
+        OBJECT_OT_import_stop_motion_obj.bl_idname,
+        text="", icon='FILE')
+    path = context.blend_data.filepath.replace(
+        ".blend", f"_{ob.name}_frame.obj")
+    import_obj.filepath = export_obj.filepath = path
+
+
+class VIEW3D_MT_PIE_StopMotion(bpy.types.Menu):
+    # label is displayed at the center of the pie menu.
+    bl_label = "Select Mode"
+
+
+    def draw(self, context):
+        layout = self.layout
+
+        pie = layout.menu_pie()
+        # operator_enum will just spread all available options
+        # for the type enum of the operator on the pie
+        # pie.operator_enum("mesh.select_mode", "type")
+        pie.operator()
+        draw_buttons(context, pie, lambda x:x)
+
+
 # Keymaps
 
 class KeyMaps():
@@ -410,6 +473,7 @@ class KeyMaps():
             )
         kmi = km.keymap_items.new(SCREEN_OT_next_or_add_key.bl_idname, 'UP_ARROW', 'PRESS')
         cls.keymaps = [(km, kmi)]
+        # bpy.ops.wm.call_menu_pie(name='') (save for later)
     @classmethod
     def unmap(cls):
         if hasattr(cls, "keymaps"):
@@ -422,82 +486,35 @@ class KeyMaps():
 
 class StopMotionPanel(bpy.types.Panel):
     """Creates a Panel in the scene context of the properties editor"""
-    bl_label = "Key"
+    bl_label = ""
     bl_idname = "OBJECT_PT_Stopmotion"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
-    bl_category = "Animation"
+    bl_category = "StopMo"
+
+    def new_row(self, layout):
+        row = layout.row()
+        row.ui_units_x = 200
+        row.scale_x = 2
+        return row
 
     def draw(self, context):
         flow = layout = self.layout
         layout.use_property_split = True
-        scene = context.scene
+
         ob = context.object
         mod = Modifier(ob)
         
         flow = layout.split()
-        """
-        col = flow.column()
-        col.label(text="")
-        """
+
         col = flow.column()
         col.scale_y = 2
-        # Keyframing
-        row = col.row()
-        row.ui_units_x = 2
-        row.scale_x = 2
-        if not mod:
-            row.operator(
-                OBJECT_OT_add_stop_motion.bl_idname,
-                text="", icon='PLUS')
-            return
-        object_mode = ob.mode            
-        act_mode_item = bpy.types.Object.bl_rna.properties["mode"].enum_items[object_mode]
-        act_mode_i18n_context = bpy.types.Object.bl_rna.properties["mode"].translation_context
-        row.operator_menu_enum(
-            OBJECT_OT_stop_motion_mode.bl_idname, "mode",
-            text="",
-            icon=act_mode_item.icon,
-        )
-        del act_mode_item
-        row = col.row()
-        row.ui_units_x = 200
-        row.scale_x = 2
-        row.operator(
-            OBJECT_OT_keyframe_stop_motion.bl_idname,
-            text="", icon='DECORATE_KEYFRAME'
-            ).use_copy = True
-        row = col.row()
-        row.ui_units_x = 200
-        row.scale_x = 2
-        row.operator(
-            SCREEN_OT_next_or_add_key.bl_idname,text="", icon='NEXT_KEYFRAME')
-        row = col.row()
-        row.ui_units_x = 200
-        row.scale_x = 2
-        row.operator(
-            OBJECT_OT_Join_keyframe_stop_motion.bl_idname,
-            text="", icon='MOD_BOOLEAN')
-        # Import / Export
-        row = col.row()
-        row.ui_units_x = 2
-        row.scale_x = 2
-        export_obj = row.operator(
-            OBJECT_OT_export_stop_motion_obj.bl_idname,
-            text="", icon='CURRENT_FILE')
-        row = col.row()
-        row.ui_units_x = 2
-        row.scale_x = 2
-        import_obj = row.operator(
-            OBJECT_OT_import_stop_motion_obj.bl_idname,
-            text="", icon='FILE')
-        path = context.blend_data.filepath.replace(
-            ".blend", f"_{ob.name}_frame.obj")
-        import_obj.filepath = export_obj.filepath = path
-        # 
-        # col.prop(mod.modifier, mod.collection_prop, text="Shape")
+
+        draw_buttons(context, col, self.new_row)
+
 
 # Menus
+
 
 def add_object_button(self, context):
     self.layout.operator(
