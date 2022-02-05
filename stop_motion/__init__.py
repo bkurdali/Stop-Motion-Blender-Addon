@@ -20,7 +20,7 @@
 bl_info = {
     "name": "Stop Motion",
     "author": "Bassam Kurdali",
-    "version": (0, 3),
+    "version": (0, 4),
     "blender": (3, 00, 0),
     "location": "View3D > Add > Stop Motion Object",
     "description": "Turns Blender into a Virtual Stop Motion Studio",

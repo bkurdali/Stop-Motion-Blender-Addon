@@ -241,15 +241,28 @@ class SCREEN_OT_next_or_add_key(bpy.types.Operator):
 
     first_run = True
 
+    def fallback(self):
+        result = bpy.ops.screen.keyframe_jump()
+        if result == {'CANCELLED'}:
+            self.report(
+                {'WARNING'}, "No more keyframes to jump in this direction")
+        return result
+
     def execute(self, context):
+
+        modifier = Modifier(context.object)
+        if not modifier or modifier.future_keys(context):
+            return self.fallback()
+
+        # Set the offset to addon preferences on first run
         if SCREEN_OT_next_or_add_key.first_run:
             SCREEN_OT_next_or_add_key.first_run = False
             preferences = context.preferences.addons[__package__].preferences
             self.frame_offset = preferences.frame_offset
-        obj = context.object
-        modifier = Modifier(obj)
-        if self.frame_offset == 0 or not modifier or modifier.future_keys(context):
-            return bpy.ops.screen.keyframe_jump()
+
+        if self.frame_offset == 0:
+            return self.fallback()
+
         context.scene.frame_set(context.scene.frame_current + self.frame_offset)
         return bpy.ops.object.keyframe_stop_motion(use_copy=self.use_copy)
 
@@ -361,9 +374,27 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
 
 # UI
 
-# Panels
+# Keymaps
 
-""" MeshKey Main Panel """
+class KeyMaps():
+
+    @classmethod
+    def map(cls, context):
+        kc = context.window_manager.keyconfigs.addon.keymaps
+        km = kc.get(
+            'Frames',
+            kc.new(name="Frames", space_type='EMPTY')
+            )
+        kmi = km.keymap_items.new(SCREEN_OT_next_or_add_key.bl_idname, 'UP_ARROW', 'PRESS')
+        cls.keymaps = [(km, kmi)]
+    @classmethod
+    def unmap(cls):
+        if hasattr(cls, "keymaps"):
+            for km, kmi in cls.keymaps:
+                km.keymap_items.remove(kmi)
+            cls.keymaps.clear()
+
+# Panels
 
 
 class StopMotionPanel(bpy.types.Panel):
@@ -463,9 +494,12 @@ def register():
 
     bpy.utils.register_class(StopMotionPanel)
     extend_menus()
+    KeyMaps.map(bpy.context)
+
 
 
 def unregister():
+    KeyMaps.unmap()
     revert_menus()
     bpy.utils.unregister_class(StopMotionPanel)
 
