@@ -32,10 +32,11 @@ bl_info = {
 """
 TODO
 
-- D key Pie menu
+- D key Pie menu IN PROGRESS
 - Make paint mode overlays work again
 - Indicators/Toggles (viewport update/ realize/ update handler/ ?)
 - override tab, ctrl-tab with own operator/pie menu
+- Onion Skinning
 
 - Workspace Niceties (Beginner Friendly)
 - Streamline editing in text editor on export?

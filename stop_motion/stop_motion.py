@@ -381,28 +381,63 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
 
         ob = context.object
         modifier = Modifier(ob)
-        collection = modifier.collection
-        index = modifier.index
-        
+        if modifier:
+            collection = modifier.collection
+            index = modifier.index
 
-        # put the correct object_data in
-        sources = sorted([o for o in collection.objects], key=lambda o:o.name)
-        ob.data = sources[index].data
-        if self.mode == 'OBJECT':
-            bpy.app.handlers.frame_change_post.clear()          
-        else:
-            bpy.app.handlers.frame_change_post.append(update_data)
+
+            # put the correct object_data in
+            sources = sorted([o for o in collection.objects], key=lambda o:o.name)
+            ob.data = sources[index].data
+            if self.mode == 'OBJECT':
+                for handler in bpy.app.handlers.frame_change_post:
+                    if handler.__name__ == update_data.__name__:
+                        bpy.app.handlers.frame_change_post.remove(handler)
+            else:
+                bpy.app.handlers.frame_change_post.append(update_data)
         
         return bpy.ops.object.mode_set(mode=self.mode)
 
 
 # UI
 
-# Menus
+
+# Keymaps
+
+class KeyMaps():
+
+    settings = (
+        ("Frames", 'EMPTY', SCREEN_OT_next_or_add_key.bl_idname, 'UP_ARROW', {}, {}),
+        ("3D View", 'VIEW_3D', "wm.call_menu_pie", 'D',{}, {'name': 'VIEW3D_MT_PIE_StopMotion'}),
+        ("Object Non-modal", 'EMPTY', "wm.call_menu_pie", 'TAB', {'ctrl':1}, {'name': 'VIEW3D_MT_PIE_StopMotion_Mode'})
+    )
+
+    @classmethod
+    def map(cls, context):
+        cls.keymaps = []
+        kc = context.window_manager.keyconfigs.addon.keymaps
+        for keymap_name, keymap_space, operator, key, mods, props in cls.settings:
+            km = kc.get(keymap_name, kc.new(
+                name=keymap_name,space_type=keymap_space))
+            kmi = km.keymap_items.new(operator, key, 'PRESS')
+            for prop, value in mods.items():
+                setattr(kmi, prop, value)
+            for prop, value in props.items():
+                kmi.properties[prop] = value
+            cls.keymaps.append((km, kmi))
+
+    @classmethod
+    def unmap(cls):
+        if hasattr(cls, "keymaps"):
+            for km, kmi in cls.keymaps:
+                km.keymap_items.remove(kmi)
+            cls.keymaps.clear()
+
+# Draw Functions
 
 
-def draw_buttons(context, layout, item_func):
-    """ All the Operator Buttons """
+def draw_first(context, layout, item_func):
+    """ Draw the first Button, just for the panel"""
     ob = context.object
     mod = Modifier(ob)
     row = item_func(layout)
@@ -420,66 +455,31 @@ def draw_buttons(context, layout, item_func):
         icon=act_mode_item.icon,
     )
 
-    # Keyframing
-    item_func(layout).operator(
-        OBJECT_OT_keyframe_stop_motion.bl_idname,
-        text="", icon='DECORATE_KEYFRAME'
-        ).use_copy = True
-    item_func(layout).operator(
-        SCREEN_OT_next_or_add_key.bl_idname,text="", icon='NEXT_KEYFRAME')
-    item_func(layout).operator(
-        OBJECT_OT_Join_keyframe_stop_motion.bl_idname,
-        text="", icon='MOD_BOOLEAN')
-
-    # Import / Export
-    item_func(layout) # Seperator
-    export_obj = item_func(layout).operator(
-        OBJECT_OT_export_stop_motion_obj.bl_idname,
-        text="", icon='CURRENT_FILE')
-    import_obj = item_func(layout).operator(
-        OBJECT_OT_import_stop_motion_obj.bl_idname,
-        text="", icon='FILE')
-    path = context.blend_data.filepath.replace(
-        ".blend", f"_{ob.name}_frame.obj")
-    import_obj.filepath = export_obj.filepath = path
 
 
-class VIEW3D_MT_PIE_StopMotion(bpy.types.Menu):
-    # label is displayed at the center of the pie menu.
-    bl_label = "Select Mode"
+class Draw():
 
+    def __init__(self, layout, item_func, operators):
+        self.layout = layout
+        self.item_func = item_func
+        self.operators = operators
 
-    def draw(self, context):
-        layout = self.layout
-
-        pie = layout.menu_pie()
-        # operator_enum will just spread all available options
-        # for the type enum of the operator on the pie
-        # pie.operator_enum("mesh.select_mode", "type")
-        pie.operator()
-        draw_buttons(context, pie, lambda x:x)
-
-
-# Keymaps
-
-class KeyMaps():
-
-    @classmethod
-    def map(cls, context):
-        kc = context.window_manager.keyconfigs.addon.keymaps
-        km = kc.get(
-            'Frames',
-            kc.new(name="Frames", space_type='EMPTY')
+    def button(self, operator, text, icon, props):
+        """ Draw a single Button """
+        item = self.item_func(self.layout).operator(
+            operator,
+            text=text, icon=icon
             )
-        kmi = km.keymap_items.new(SCREEN_OT_next_or_add_key.bl_idname, 'UP_ARROW', 'PRESS')
-        cls.keymaps = [(km, kmi)]
-        # bpy.ops.wm.call_menu_pie(name='') (save for later)
-    @classmethod
-    def unmap(cls):
-        if hasattr(cls, "keymaps"):
-            for km, kmi in cls.keymaps:
-                km.keymap_items.remove(kmi)
-            cls.keymaps.clear()
+        for prop, value in props.items():
+            setattr(item, prop, value)
+
+
+    def buttons(self, context):
+        """ All the Operator Buttons """
+        # Operator idname, text, icon, props dict
+        for operator, text, icon, props in self.operators:
+            self.button(operator, text, icon, props)
+
 
 # Panels
 
@@ -491,6 +491,17 @@ class StopMotionPanel(bpy.types.Panel):
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
     bl_category = "StopMo"
+
+
+    main_operators = [
+        (OBJECT_OT_keyframe_stop_motion.bl_idname, "", 'DECORATE_KEYFRAME', {"use_copy": True}),
+        (SCREEN_OT_next_or_add_key.bl_idname, "", 'NEXT_KEYFRAME', {}),
+        (OBJECT_OT_Join_keyframe_stop_motion.bl_idname, "", 'MOD_BOOLEAN', {})
+    ]
+    obj_operators = [
+        [OBJECT_OT_export_stop_motion_obj.bl_idname, "", 'CURRENT_FILE', {}],
+        [OBJECT_OT_import_stop_motion_obj.bl_idname, "", 'FILE', {}]
+    ]
 
     def new_row(self, layout):
         row = layout.row()
@@ -510,10 +521,47 @@ class StopMotionPanel(bpy.types.Panel):
         col = flow.column()
         col.scale_y = 2
 
-        draw_buttons(context, col, self.new_row)
+        draw_first(context, col, self.new_row)
+        Draw(col, self.new_row, self.main_operators).buttons(context)
+        path = context.blend_data.filepath.replace(".blend", f"_{ob.name}_frame.obj")
+        for operator in self.obj_operators:
+            operator[-1]["filepath"] = path
+        Draw(col, self.new_row, self.obj_operators).buttons(context)
 
 
 # Menus
+
+
+class VIEW3D_MT_PIE_StopMotion(bpy.types.Menu):
+    # label is displayed at the center of the pie menu.
+    bl_label = "Select Mode"
+
+
+    def draw(self, context):
+        layout = self.layout
+
+        pie = layout.menu_pie()
+        # operator_enum will just spread all available options
+        # for the type enum of the operator on the pie
+        # pie.operator_enum("mesh.select_mode", "type")
+        Draw(pie, lambda x:x, StopMotionPanel.main_operators).buttons(context)
+
+
+class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
+    bl_label = "Select Mode"
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def draw(self, context):
+        layout = self.layout
+        pie = layout.menu_pie()
+        modifier = Modifier(context.object)
+        if modifier:
+            pie.operator_enum(OBJECT_OT_stop_motion_mode.bl_idname, "mode")
+        else:
+            bpy.ops.view3d.object_mode_pie_or_toggle()
 
 
 def add_object_button(self, context):
@@ -544,6 +592,9 @@ def register():
     bpy.utils.register_class(SCREEN_OT_next_or_add_key)
     bpy.utils.register_class(OBJECT_OT_Join_keyframe_stop_motion)
 
+    bpy.utils.register_class(VIEW3D_MT_PIE_StopMotion)
+    bpy.utils.register_class(VIEW3D_MT_PIE_StopMotion_Mode)
+
     bpy.utils.register_class(StopMotionPanel)
     extend_menus()
     KeyMaps.map(bpy.context)
@@ -554,6 +605,9 @@ def unregister():
     KeyMaps.unmap()
     revert_menus()
     bpy.utils.unregister_class(StopMotionPanel)
+
+    bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion)
+    bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion_Mode)
 
     bpy.utils.unregister_class(OBJECT_OT_add_stop_motion)
     bpy.utils.unregister_class(OBJECT_OT_stop_motion_mode)
