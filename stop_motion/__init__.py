@@ -32,9 +32,13 @@ bl_info = {
 """
 TODO
 
+- D key Pie menu
+- Add Next and Add Keyframe to the "toolbar"
+- Create Join to current mesh
+
 - Workspace Niceties (Beginner Friendly)
 - Streamline editing in text editor on export?
-- Configuration
+- Add Obj Settings to Prefs
 - Error handling
 - Tests
 """

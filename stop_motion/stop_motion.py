@@ -348,9 +348,10 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
     bl_label = "Stop Motion Mode"
     
     mode: bpy.props.EnumProperty(
-        items = [(item, f"{item.replace('_',' ').title()} Mode", item) for item in (
-            'OBJECT', 'EDIT', 'SCULPT',
-            'VERTEX_PAINT', 'WEIGHT_PAINT', 'TEXTURE_PAINT')],
+        items = [(item, f"{item.replace('_',' ').title()} Mode", item, icon) for item, icon in (
+            ('OBJECT', 'OBJECT_DATAMODE'), ('EDIT', 'EDITMODE_HLT'),
+            ('SCULPT', 'SCULPTMODE_HLT'), ('VERTEX_PAINT', 'VPAINT_HLT'),
+            ('WEIGHT_PAINT', 'MOD_VERTEX_WEIGHT'), ('TEXTURE_PAINT', 'TPAINT_HLT'))],
         default='OBJECT')
 
     def execute(self, context):
@@ -444,6 +445,11 @@ class StopMotionPanel(bpy.types.Panel):
             OBJECT_OT_keyframe_stop_motion.bl_idname,
             text="", icon='DECORATE_KEYFRAME'
             ).use_copy = True
+        row = col.row()
+        row.ui_units_x = 200
+        row.scale_x = 2
+        row.operator(
+            SCREEN_OT_next_or_add_key.bl_idname,text="", icon='NEXT_KEYFRAME')
         # Import / Export
         row = col.row()
         row.ui_units_x = 2
