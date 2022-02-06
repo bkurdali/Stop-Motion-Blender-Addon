@@ -27,10 +27,16 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         description="Use up arrow to key after last frame: 2 for twos, 0 to disable",
         default=2)
 
+    tab_for_pie_menu: bpy.props.BoolProperty(
+        name="Tab for Pie Menu",
+        description="Need to use this instead of the Keymap Preference",
+        default=False
+        )
     def draw(self, context):
         layout = self.layout
         layout.label(text="Stop Motion Preferences")
         layout.prop(self, "frame_offset")
+        layout.prop(self, "tab_for_pie_menu")
 
 
 def register():

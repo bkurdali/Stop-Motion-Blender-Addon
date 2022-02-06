@@ -294,7 +294,7 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
     bl_idname = "object.import_stop_motion_obj"
     bl_label = "Import OBJ"
 
-    filepath:bpy.props.StringProperty(default="")
+    filepath: bpy.props.StringProperty(default="")
 
     def execute(self, context):
         if not self.filepath:
@@ -377,6 +377,8 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
             ('TEXTURE_PAINT', 'Texture Paint Mode', 'TEXTURE_PAINT', 'TPAINT_HLT', 5)],
         default='OBJECT')
 
+    toggle: bpy.props.BoolProperty(default=False)
+
     def execute(self, context):
 
         ob = context.object
@@ -389,6 +391,11 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
             # put the correct object_data in
             sources = sorted([o for o in collection.objects], key=lambda o:o.name)
             ob.data = sources[index].data
+
+            if self.toggle and self.mode == ob.mode:
+                print("here, ", self.mode, ", object", ob.mode)
+                self.mode = 'OBJECT'
+
             if self.mode == 'OBJECT':
                 for handler in bpy.app.handlers.frame_change_post:
                     if handler.__name__ == update_data.__name__:
@@ -396,7 +403,40 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
             else:
                 bpy.app.handlers.frame_change_post.append(update_data)
         
-        return bpy.ops.object.mode_set(mode=self.mode)
+        return bpy.ops.object.mode_set(mode=self.mode, toggle=self.toggle)
+
+
+def is_handler_running():
+    return any([update_data.__name__ == handler.__name__ for handler in bpy.app.handlers.frame_change_post])
+
+
+class OBJECT_OT_stop_motion_updater_toggle(bpy.types.Operator):
+    """Start / Stop the Updater"""
+    bl_idname = "object.stop_motion_updater_toggle"
+    bl_label = "Toggle Updater"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        obj = context.object
+        modifier = Modifier(obj)
+        running = is_handler_running()
+        if not modifier:
+            return running
+        object_mode = obj.mode == 'OBJECT'
+        if object_mode:
+            return running
+        return not running
+
+    def execute(self, context):
+        handlers = bpy.app.handlers.frame_change_post
+        for handler in handlers:
+            if handler.__name__ == update_data.__name__:
+                bpy.app.handlers.frame_change_post.remove(handler)
+                break
+        else:
+            bpy.app.handlers.frame_change_post.append(update_data)
+        return {'FINISHED'}
 
 
 # UI
@@ -406,15 +446,19 @@ class OBJECT_OT_stop_motion_mode(StopMotionOperator):
 
 class KeyMaps():
 
+
     settings = (
         ("Frames", 'EMPTY', SCREEN_OT_next_or_add_key.bl_idname, 'UP_ARROW', {}, {}),
         ("3D View", 'VIEW_3D', "wm.call_menu_pie", 'D',{}, {'name': 'VIEW3D_MT_PIE_StopMotion'}),
-        ("Object Non-modal", 'EMPTY', "wm.call_menu_pie", 'TAB', {'ctrl':1}, {'name': 'VIEW3D_MT_PIE_StopMotion_Mode'})
+        ("Object Non-modal", 'EMPTY', "wm.call_menu_pie", 'TAB', {'ctrl': 1}, {'name': 'VIEW3D_MT_PIE_StopMotion_Mode'}),
+        ("Object Non-modal", 'EMPTY', OBJECT_OT_stop_motion_mode.bl_idname, 'TAB', {'ctrl': 0}, {'mode': 1, 'toggle': True})
     )
 
     @classmethod
     def map(cls, context):
         cls.keymaps = []
+        preferences = context.preferences.addons[__package__].preferences
+        use_tab_menu = preferences.tab_for_pie_menu
         kc = context.window_manager.keyconfigs.addon.keymaps
         for keymap_name, keymap_space, operator, key, mods, props in cls.settings:
             km = kc.get(keymap_name, kc.new(
@@ -422,9 +466,17 @@ class KeyMaps():
             kmi = km.keymap_items.new(operator, key, 'PRESS')
             for prop, value in mods.items():
                 setattr(kmi, prop, value)
+
+            # Really Yucky but I don't know how else to do this
+            if operator == "wm.call_menu_pie" and props.get('name') == 'VIEW3D_MT_PIE_StopMotion_Mode':
+                kmi.ctrl = 0 if use_tab_menu else 1
+            elif operator == OBJECT_OT_stop_motion_mode.bl_idname:
+                kmi.ctrl = 1 if use_tab_menu else 0
+
             for prop, value in props.items():
                 kmi.properties[prop] = value
             cls.keymaps.append((km, kmi))
+
 
     @classmethod
     def unmap(cls):
@@ -526,7 +578,11 @@ class StopMotionPanel(bpy.types.Panel):
         path = context.blend_data.filepath.replace(".blend", f"_{ob.name}_frame.obj")
         for operator in self.obj_operators:
             operator[-1]["filepath"] = path
-        Draw(col, self.new_row, self.obj_operators).buttons(context)
+        drawer = Draw(col, self.new_row, self.obj_operators)
+        drawer.buttons(context)
+        running = is_handler_running()
+        icon = 'PLAY' if not running else 'SNAP_FACE'
+        drawer.button(operator=OBJECT_OT_stop_motion_updater_toggle.bl_idname, text="", icon=icon, props={})
 
 
 # Menus
@@ -561,7 +617,7 @@ class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
         if modifier:
             pie.operator_enum(OBJECT_OT_stop_motion_mode.bl_idname, "mode")
         else:
-            bpy.ops.view3d.object_mode_pie_or_toggle()
+            pie.operator_enum("object.mode_set", "mode")
 
 
 def add_object_button(self, context):
@@ -586,6 +642,7 @@ def revert_menus():
 def register():
     bpy.utils.register_class(OBJECT_OT_add_stop_motion) # Create and Initialize
     bpy.utils.register_class(OBJECT_OT_stop_motion_mode) # Mode Change Wrapper
+    bpy.utils.register_class(OBJECT_OT_stop_motion_updater_toggle)
     bpy.utils.register_class(OBJECT_OT_import_stop_motion_obj)
     bpy.utils.register_class(OBJECT_OT_export_stop_motion_obj)
     bpy.utils.register_class(OBJECT_OT_keyframe_stop_motion) # Insert New Key
@@ -608,7 +665,7 @@ def unregister():
 
     bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion)
     bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion_Mode)
-
+    bpy.utils.unregister_class(OBJECT_OT_stop_motion_updater_toggle)
     bpy.utils.unregister_class(OBJECT_OT_add_stop_motion)
     bpy.utils.unregister_class(OBJECT_OT_stop_motion_mode)
     bpy.utils.unregister_class(OBJECT_OT_import_stop_motion_obj)
