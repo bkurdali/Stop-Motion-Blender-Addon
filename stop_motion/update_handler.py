@@ -23,7 +23,7 @@ if "bpy" in locals():
 else:
     from . import modifier_data
 import bpy
-from modifier_data import Modifier
+from .modifier_data import Modifier
 
 
 def stop_motion_data(scene):
@@ -39,7 +39,7 @@ def handler_loop(func):
     def wrapper():
         for handler in bpy.app.handlers.frame_change_post:
              if stop_motion_data.__name__ == handler.__name__:
-                 func(handler)
+                 return func(handler)
     return wrapper
 
 

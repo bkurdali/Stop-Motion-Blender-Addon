@@ -32,7 +32,7 @@ else:
 
 import bpy
 import os
-from modifier_data import Modifier, to_name
+from .modifier_data import Modifier, StopMotionOperator
 
 
 def path(context):
@@ -45,13 +45,14 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
     bl_label = "Import OBJ"
 
     def execute(self, context):
-        if not context.blend_data.filepath:
-            self.report({'WARNING'}, "Save Blend file first")
+        filepath = path(context)
+        if not os.path.isfile(filepath):
+            self.report({'WARNING'}, "No OBJ; Export something first")
             return {'CANCELLED'}
         stop_motion_object = context.object
         preferences = context.preferences.addons[__package__].preferences
         bpy.ops.import_scene.obj(
-            filepath=path(context), use_split_objects=True,
+            filepath=filepath, use_split_objects=True,
             use_split_groups=False, use_groups_as_vgroups=True,
             use_image_search=True, split_mode='ON', global_clamp_size=0,
             use_edges=False, use_smooth_groups=preferences.use_smooth_groups,
@@ -71,9 +72,9 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
     bl_label = "Export OBJ"
 
     def execute(self, context):
-        filepath = path(context)
-        if not os.path.isfile(filepath):
-            self.report({'WARNING'}, "No OBJ; Export something first")
+
+        if not context.blend_data.filepath:
+            self.report({'WARNING'}, "Save Blend file first")
             return {'CANCELLED'}
         stop_motion_object = context.object
         preferences = context.preferences.addons[__package__].preferences
@@ -83,7 +84,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
         stop_motion_object.data = data
         # export obj with the right settings
         bpy.ops.export_scene.obj(
-            filepath=filepath,
+            filepath=path(context),
             check_existing=False, use_selection=True,
             use_animation=False, use_mesh_modifiers=False, use_edges=False,
             use_smooth_groups=preferences.use_smooth_groups,

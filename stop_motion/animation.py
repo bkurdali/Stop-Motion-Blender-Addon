@@ -29,16 +29,7 @@ else:
 
 import bpy
 import os
-from modifier_data import Modifier
-
-
-class StopMotionOperator(bpy.types.Operator):
-    """ Save Typing some Things """
-    bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(cls, context):
-        return context.object and Modifier(context.object)
+from .modifier_data import Modifier, StopMotionOperator
 
 
 class OBJECT_OT_add_stop_motion(bpy.types.Operator):
@@ -65,9 +56,11 @@ class OBJECT_OT_add_stop_motion(bpy.types.Operator):
         stop_motion_collection.hide_render = True
         stop_motion_collection.hide_viewport = True
 
+        first_frame = stop_motion_object.copy()
+
         # Create and Populate Modifiers
         for name, json_path, modname in (
-                ("MeshKey", "modifier.json", MODNAME),
+                ("MeshKey", "modifier.json", Modifier.name),
                 ("Realize", "realizer.json", "Realizer")):
             node_group = json_nodes.read_node(
                 name, os.path.join(os.path.dirname(__file__), json_path))
@@ -81,7 +74,6 @@ class OBJECT_OT_add_stop_motion(bpy.types.Operator):
         modifier.keyframe_index(context)
         modifier.modifier.show_in_editmode = False
 
-        first_frame = stop_motion_object.copy()
         first_frame.name = modifier.object_name()
         old_collections = [
             c for c in bpy.data.collections if first_frame.name in c]
@@ -110,7 +102,7 @@ def insert_keyframe(context, source_data, use_copy=False):
     newest = modifier.object_name(index=index)
 
     if not source_data:
-        source_data = collection.objects[int_to_str(modifier.index)].data
+        source_data = modifier.get_object().data
         use_copy = True # Always copy the current shape if keyframing it
 
     shape_data = source_data.copy() if use_copy else source_data

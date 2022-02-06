@@ -118,3 +118,13 @@ class Modifier():
 
     def reveal_viewport(self):
         self.modifier.show_viewport = True
+
+
+class StopMotionOperator(bpy.types.Operator):
+    """Wrapper for operators that need Modifier"""
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.object and Modifier(context.object)
+

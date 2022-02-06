@@ -37,7 +37,7 @@ else:
     from . import modifier_data
 
 import bpy
-from modifier_data import Modifier
+from .modifier_data import Modifier, StopMotionOperator
 
 
 def set_object(mode):

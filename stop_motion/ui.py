@@ -26,7 +26,7 @@ else:
     from . import modifier_data
 
 import bpy
-from modifier_data import Modifier
+from .modifier_data import Modifier
 
 # Keymaps
 
@@ -197,7 +197,7 @@ class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
         pie = layout.menu_pie()
         modifier = Modifier(context.object)
         if modifier:
-            pie.operator_enum(OBJECT_OT_stop_motion_mode.bl_idname, "mode")
+            pie.operator_enum("object.stop_motion_mode", "mode")
         else:
             pie.operator_enum("object.mode_set", "mode")
 
