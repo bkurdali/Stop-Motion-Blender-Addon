@@ -47,10 +47,16 @@ TODO
 
 if "bpy" in locals():
     import importlib
-    importlib.reload(stop_motion)
+    importlib.reload(animation)
+    importlib.reload(ui)
+    importlib.reload(modes)
+    importlib.reload(obj_io)
     importlib.reload(preferences)
 else:
-    from . import stop_motion
+    from . import animation
+    from . import ui
+    from . import modes
+    from . import obj_io
     from . import preferences
 
 import bpy
@@ -67,13 +73,19 @@ def stop_motion_manual_map():
 
 def register():
     preferences.register()
-    stop_motion.register()
+    modes.register()
+    animation.register()
+    obj_io.register()
+    ui.register()
     bpy.utils.register_manual_map(stop_motion_manual_map)
 
 
 def unregister():
     bpy.utils.unregister_manual_map(stop_motion_manual_map)
-    stop_motion.unregister()
+    ui.unregister()
+    obj_io.unregister()
+    animation.unregister()
+    modes.unregister()
     preferences.unregister()
 
 

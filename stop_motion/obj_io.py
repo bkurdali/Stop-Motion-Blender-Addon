@@ -99,3 +99,15 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
         modes.restore(mode, stop_motion_object)
         return {'FINISHED'}
 
+
+def register():
+    bpy.utils.register_class(OBJECT_OT_import_stop_motion_obj)
+    bpy.utils.register_class(OBJECT_OT_export_stop_motion_obj)
+
+
+def unregister():
+    bpy.utils.unregister_class(OBJECT_OT_import_stop_motion_obj)
+    bpy.utils.unregister_class(OBJECT_OT_export_stop_motion_obj)
+
+if __name__ == "__main__":
+    register()
