@@ -68,6 +68,11 @@ class Node_Tree():
         value = getattr(data, prop)
         if callable(value):
             return False
+        try:
+            setattr(data, prop, value)
+        except:
+            return False
+
         return True
 
     def serialize_element(self, element, additions=[]):
@@ -208,5 +213,9 @@ if __name__ == "__main__":
         "../stop_motion/modifier.json"
         ))
     write_node("MeshKey", filepath)
+
     filepath = filepath.replace("modifier.json", "realizer.json")
     write_node("Realize", filepath)
+
+    filepath = filepath.replace("realizer.json", "materializer.json")
+    write_node("Materialize", filepath)

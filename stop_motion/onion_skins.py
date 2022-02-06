@@ -26,12 +26,51 @@ else:
     from . import modifier_data
 
 import bpy
-from .modifier_data import Modifier
+from .modifier_data import Modifier, StopMotionOperator
+
+
+def create_onion(source, offset):
+    """ Create an onion skin object """
+    # get the onion collection
+    # Create the object
+    onion_object = None
+    # put it in the collection
+    # Create the material
+    # add the modifiers
+    # Copy modifier settings from source
+    # Assign material to modifier
+    # Adjust object viewport properties to match material
+    # do the nla of the action, offset it by offset
+    return onion_object
+
+
+def delete_onion(source, offset):
+    return
+
+
+class OBJECT_OT_stopmotion_onion_skins(StopMotionOperator):
+    """Adjust number and offset of onion skins"""
+    bl_idname = "object.stopmotion_onion_skins"
+    bl_label = "Onion Skinning"
+
+    future_frames: bpy.props.IntProperty(
+        name="Future Frames", default=0, min=0, max=10)
+
+    past_frames: bpy.props.IntProperty(
+        name="Past Frames", default=0, min=0, max=10)
+
+    offset: bpy.props.IntProperty(name="Offset", default=2, min=1)
+
+    def execute(self, context):
+        stop_motion_object = context.object
+        modifier = Modifier(stop_motion_object)
+
+        return {'FINISHED'}
 
 
 def register():
-    pass
+    bpy.utils.register_class(OBJECT_OT_stopmotion_onion_skins)
 
 
 def unregister():
-    pass
+    bpy.utils.unregister_class(OBJECT_OT_stopmotion_onion_skins)
