@@ -51,12 +51,14 @@ if "bpy" in locals():
     importlib.reload(ui)
     importlib.reload(modes)
     importlib.reload(obj_io)
+    importlib.reload(onion_skins)
     importlib.reload(preferences)
 else:
     from . import animation
     from . import ui
     from . import modes
     from . import obj_io
+    from . import onion_skins
     from . import preferences
 
 import bpy
@@ -76,6 +78,7 @@ def register():
     modes.register()
     animation.register()
     obj_io.register()
+    onion_skins.register()
     ui.register()
     bpy.utils.register_manual_map(stop_motion_manual_map)
 
@@ -83,6 +86,7 @@ def register():
 def unregister():
     bpy.utils.unregister_manual_map(stop_motion_manual_map)
     ui.unregister()
+    onion_skins.unregister()
     obj_io.unregister()
     animation.unregister()
     modes.unregister()
