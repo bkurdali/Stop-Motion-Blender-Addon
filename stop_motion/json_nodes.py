@@ -68,10 +68,6 @@ class Node_Tree():
         value = getattr(data, prop)
         if callable(value):
             return False
-        try:
-            setattr(data, prop, value)
-        except:
-            return False
 
         return True
 
@@ -107,7 +103,8 @@ class Node_Tree():
     
     def serialize_link(self, link):
         """ Serialize a Link """
-        return self.serialize_element(link)
+        items = self.serialize_element(link)
+        return items
 
     def serialize_group_io(self, io, additions=[]):
         return self.serialize_element(io, ["bl_socket_idname",])
