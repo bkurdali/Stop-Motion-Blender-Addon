@@ -21,24 +21,58 @@ if "bpy" in locals():
     import importlib
     importlib.reload(update_handler)
     importlib.reload(modifier_data)
+    importlib.reload(json_nodes)
 else:
     from . import update_handler
     from . import modifier_data
+    from . import json_nodes
 
 import bpy
+import os
 from .modifier_data import Modifier, StopMotionOperator
+
+
+def collection_name(source):
+    return f"STPMO_onion_{source.name}"
 
 
 def create_onion(source, offset):
     """ Create an onion skin object """
     # get the onion collection
+    name = collection_name(source)
+    collections = bpy.data.collections
+    collection = collections.get(name, collections.new(name))
+    collection.use_fake_user = True
+    collection.use_select = False
+    collection.show_render = False
     # Create the object
-    onion_object = None
+    name = f"STPMO_onion{'+' if offset >= 0 else '-'}_{offset:02}_{source.name}"
+    objects = bpy.data.objects
+    onion_object = objects.get(name, objects.new(name=name, object_data=source.data))
+    onion_object.use_select = False
+    onion_object.show_render = False
     # put it in the collection
+    collection.objects.link(onion_object)
     # Create the material
+    name = f"STPMO_onion_{'+' if offset >= 0 else '-'}_mat"
+    materials = bpy.data.materials
+    material = materials.get(name, materials.new(name))
     # add the modifiers
+    for name, json_path, modname in (
+            ("MeshKey", "modifier.json", Modifier.name),
+            ("Materialize", "materializer.json", "Materializer")):
+        node_group = json_nodes.read_node(
+            name, os.path.join(os.path.dirname(__file__), json_path))
+        modifier = onion_object.modifiers.new(modname, 'NODES')
+        modifier.node_group = node_group
+    # Assign material to second modifier
+    modifier.material = material # pseudocode won't work
     # Copy modifier settings from source
-    # Assign material to modifier
+    target_modifier = Modifier(source)
+    my_modifier = Modifier(onion_object)
+    my_modifier.collection = target_modifier.collection
+    my_modifier.index = target_modifier.index + offset
+
     # Adjust object viewport properties to match material
     # do the nla of the action, offset it by offset
     return onion_object
