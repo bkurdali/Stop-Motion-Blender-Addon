@@ -32,11 +32,20 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         description="Need to use this instead of the Keymap Preference",
         default=False
         )
+
+    use_smooth_groups: bpy.props.BoolProperty(
+        name="Use Smooth Groups",
+        default=False)
+
+
     def draw(self, context):
         layout = self.layout
         layout.label(text="Stop Motion Preferences")
         layout.prop(self, "frame_offset")
         layout.prop(self, "tab_for_pie_menu")
+        layout.separator()
+        layout.label(text="OBJ IO Preferences")
+        layout.props(self, "use_smooth_groups")
 
 
 def register():

@@ -20,10 +20,8 @@
 if "bpy" in locals():
     import importlib
     importlib.reload(json_nodes)
-    importlib.reload(preferences)
 else:
     from . import json_nodes
-    from . import preferences
 
 import bpy
 import os
