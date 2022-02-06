@@ -40,13 +40,14 @@ def create_onion(source, offset):
     """ Create an onion skin object """
     # get the onion collection
     name = collection_name(source)
+    forward = offset >= 0
     collections = bpy.data.collections
     collection = collections.get(name, collections.new(name))
     collection.use_fake_user = True
     collection.use_select = False
     collection.show_render = False
     # Create the object
-    name = f"STPMO_onion{'+' if offset >= 0 else '-'}_{offset:02}_{source.name}"
+    name = f"STPMO_onion{'+' if forward else '-'}_{offset:02}_{source.name}"
     objects = bpy.data.objects
     onion_object = objects.get(name, objects.new(name=name, object_data=source.data))
     onion_object.use_select = False
@@ -54,9 +55,24 @@ def create_onion(source, offset):
     # put it in the collection
     collection.objects.link(onion_object)
     # Create the material
-    name = f"STPMO_onion_{'+' if offset >= 0 else '-'}_mat"
+    name = f"STPMO_onion_{'+' if forward else '-'}_mat"
     materials = bpy.data.materials
     material = materials.get(name, materials.new(name))
+    material.use_nodes = True
+    for node in material.node_tree.nodes:
+        if node.type != 'OUTPUT_MATERIAL':
+            material.node_tree.nodes.remove(node)
+    group_node = material.node_tree.nodes.new(type='ShaderNodeGroup')
+    onion_group = None # have to save and get it
+    group_node.node_tree = onion_group
+    # Adjust Material Settings
+    # Turn on Transparency, turn off shadows
+    material.blend_method = 'BLEND'
+    material.shadow_method ='NONE'
+    material.use_backface_culling = True
+    # Viewport display options
+    material.diffuse_color = [1 , 0, 0, .2] if forward else [0, 1, .2, .2]
+    material.roughness = 0
     # add the modifiers
     for name, json_path, modname in (
             ("MeshKey", "modifier.json", Modifier.name),
