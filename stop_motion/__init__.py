@@ -40,7 +40,6 @@ TODO
 
 - Workspace Niceties (Beginner Friendly)
 - Streamline editing in text editor on export?
-- Add Obj Settings to Prefs
 - Error handling
 - Version tags for object, modifier/s (could be used for compatibility)
 - Tests

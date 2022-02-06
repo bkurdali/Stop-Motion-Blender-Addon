@@ -37,6 +37,22 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         name="Use Smooth Groups",
         default=False)
 
+    use_normals: bpy.props.BoolProperty(
+        name="Use Normals",
+        default=False)
+
+    use_uvs: bpy.props.BoolProperty(
+        name="Use UVs",
+        default=False)
+
+
+    use_materials:bpy.props.BoolProperty(
+        name="Use Materials",
+        default=False)
+
+    use_vertex_groups:bpy.props.BoolProperty(
+        name="Use Vertex Groups",
+        default=False)
 
     def draw(self, context):
         layout = self.layout
@@ -45,6 +61,10 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         layout.prop(self, "tab_for_pie_menu")
         layout.separator()
         layout.label(text="OBJ IO Preferences")
+        layout.props(self, "use_normals")
+        layout.props(self, "use_uvs")
+        layout.props(self, "use_materials")
+        layout.props(self, "use_vertex_groups")
         layout.props(self, "use_smooth_groups")
 
 
