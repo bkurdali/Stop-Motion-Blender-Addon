@@ -216,3 +216,6 @@ if __name__ == "__main__":
 
     filepath = filepath.replace("realizer.json", "materializer.json")
     write_node("Materialize", filepath)
+
+    filepath = filepath.replace("materializer.json", "material.json")
+    write_node("Oniony", filepath)
