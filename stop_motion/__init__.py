@@ -17,11 +17,32 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+if "bpy" in locals():
+    import importlib
+    importlib.reload(animation)
+    importlib.reload(ui)
+    importlib.reload(modes)
+    importlib.reload(obj_io)
+    importlib.reload(onion_skins)
+    importlib.reload(preferences)
+    importlib.reload(version)
+else:
+    from . import animation
+    from . import ui
+    from . import modes
+    from . import obj_io
+    from . import onion_skins
+    from . import preferences
+    from . import version
+
+import bpy
+from .version import Version
+
 bl_info = {
     "name": "Stop Motion",
     "author": "Bassam Kurdali",
-    "version": (0, 5),
-    "blender": (3, 00, 0),
+    "version": Version.get(),
+    "blender": (3, 0, 0),
     "location": "View3D > Add > Stop Motion Object",
     "description": "Turns Blender into a Virtual Stop Motion Studio",
     "warning": "Alpha Version, Expect bugs and changes",
@@ -32,36 +53,17 @@ bl_info = {
 """
 TODO
 
-- D key Pie menu IN PROGRESS
-- Make paint mode overlays work again
-- Indicators/Toggles (viewport update/ realize/ update handler/ ?)
-- override tab, ctrl-tab with own operator/pie menu
+
 - Onion Skinning
+- better naming for collections, frames, etc.
+- Version tags for collections , objects, modifier/s (could be used for compatibility)
 
 - Workspace Niceties (Beginner Friendly)
 - Streamline editing in text editor on export?
 - Error handling
-- Version tags for object, modifier/s (could be used for compatibility)
+
 - Tests
 """
-
-if "bpy" in locals():
-    import importlib
-    importlib.reload(animation)
-    importlib.reload(ui)
-    importlib.reload(modes)
-    importlib.reload(obj_io)
-    importlib.reload(onion_skins)
-    importlib.reload(preferences)
-else:
-    from . import animation
-    from . import ui
-    from . import modes
-    from . import obj_io
-    from . import onion_skins
-    from . import preferences
-
-import bpy
 
 
 # This allows you to right click on a button and link to documentation
