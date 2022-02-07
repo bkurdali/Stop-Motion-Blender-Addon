@@ -19,6 +19,8 @@
 
 """
 Version Information
+Central class to provide version tagging, perhaps some kind of do_versions
+
 """
 
 class Version():
