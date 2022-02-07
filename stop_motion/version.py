@@ -22,12 +22,14 @@ Version Information
 Central class to provide version tagging, perhaps some kind of do_versions
 
 """
+MAJOR = 0
+MINOR = 7
 
-class Version():
+def get():
+    return (MAJOR, MINOR)
 
-    major = 0
-    minor = 7
+def onion_prefix():
+    return f"STPMO_onion_"
 
-    @classmethod
-    def get(cls):
-        return (cls.major, cls.minor)
+def onion_tag():
+    return
