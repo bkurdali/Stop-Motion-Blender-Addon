@@ -22,10 +22,12 @@ if "bpy" in locals():
     importlib.reload(update_handler)
     importlib.reload(modifier_data)
     importlib.reload(json_nodes)
+    importlib.reload(version)
 else:
     from . import update_handler
     from . import modifier_data
     from . import json_nodes
+    from . import version
 
 import bpy
 import os
@@ -38,18 +40,19 @@ class OnionCollection():
     props = {
         "use_fake_user": True, "hide_select": True, "hide_render": True,}
 
-    def __init__(self.source):
+    def __init__(self, source):
         self.source = source
         self.set_name()
         collections = bpy.data.collections
-        self.collection = collections.get(
-            self.name, collections.new(self.name))
+        self.collection = collections.get(self.name)
+        if self.collection:
+            return
+        self.collection = collections.new(self.name)
+        version.onion_tag(self.collection)
         self.set_properties()
-        return collection
 
     def set_name(self):
-        self.name = f"STPMO_onion_{self.source.name}"
-        return self.name
+        self.name = f"{version.onion_prefix()}{self.source.name}"
 
     def set_properties(self, props=None):
         if not props:
@@ -72,16 +75,18 @@ class OnionMaterial():
 
     diffuse_color = ([1 , 0, 0, .2], [0, 1, 0, .2])
 
-    def __init__(self, offset, index)
+    def __init__(self, offset, index):
+
         self.forward = offset > 0
         self.index = index
-        name = self.set_name()
+        self.set_name()
         materials = bpy.data.materials
-        self.material = materials.get(name)
+        self.material = materials.get(self.name)
         if self.material:
             return # Material exists, we're done here
         # Create and setup new material
-        self.material = materials.new(name)
+        self.material = materials.new(self.name)
+        version.onion_tag(self.material)
         self.set_properties()
         self.set_node_tree()
 
@@ -99,6 +104,8 @@ class OnionMaterial():
         # link the group to the material output
         link = node_tree.links.new(
             node_from="", node_to="", socket_from="", socket_to="")
+        self.inputs = group_node.inputs
+        self.inputs['Color'] = self.diffuse_color[self.forward]
 
     def set_properties(self, props=None):
         if not props:
@@ -107,39 +114,63 @@ class OnionMaterial():
             setattr(self.material, prop, value)
         self.material.diffuse_color = self.diffuse_color[self.forward]
 
-    def set_opacity(self, opacity):
+    @property
+    def opacity(self):
+        return self.inputs['Opacity'].default_value
+
+    @opacity.setter
+    def opacity(self, opacity):
         self.material.diffuse_color[3] = opacity
+        self.inputs['Opacity'].default_value = opacity
+
+    @property
+    def color(self):
+        return [self.inputs['Color'].default_value[i] for i in range(3)]
+
+    @color.setter
+    def color(self, color):
+        """Set RGB to a 3 float array"""
+        for i, value in enumerate(color):
+            self.inputs['Color'].default_value[i] = value
+            self.material.diffuse_color[i] = value
 
     def set_name(self):
-        self.name = f"STPMO_onion_{'+' if self.forward else '-'}_{self.index:02}"
-        return self.name
+        self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}"
 
 
 class OnionSkin():
     """Creates or gets an onion skin"""
 
-    def set_name(self.forward, self.source, self.index):
-        return f"STPMO_onion{'+' if self.forward else '-'}_{self.index:02}_{self.source.name}"
+    props = {"hide_select": True, "hide_render": True}
 
-    def create_onion(source, offset, index):
+    color = ([1 , 0, 0, .2], [0, 1, 0, .2])
+
+    def set_name(self):
+        self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}_{self.source.name}"
+
+    def __init__(self, source, offset, index):
         """ Create an onion skin object """
-        forward = offset > 0 # What direction am I in?
+        self.forward = offset > 0 # What direction am I in?
+        self.source = source
+        self.offset = offset
+        self.index = index
 
-        onion_collection = OnionCollection(source)
+        self.collection = OnionCollection(source)
         # Create the object
-        name = object_name(forward, source, index)
+        self.set_name()
         objects = bpy.data.objects
-        onion_object = objects.get(name)
-        if onion_object:
-            onion_collection.link(onion_object)
-            return onion_object
-        onion_object = objects.new(name=name, object_data=source.data))
-        onion_collection.link(onion_object)
+        self.obj = objects.get(name)
+        if self.obj:
+            self.collection.link(self.obj)
+            return
+        self.obj = objects.new(name=self.name, object_data=source.data)
+        version.onion_tag(self.obj)
+        self.collection.link(self.obj)
+        self.set_properties()
 
-        onion_object.hide_select = onion_object.hide_render = True
-
+    def modifier(self):
         # Create the material
-        material = OnionMaterial(offset, index)
+        self.material = OnionMaterial(self.offset, self.index)
 
         # add the modifiers
         for name, json_path, modname in (
@@ -151,15 +182,16 @@ class OnionSkin():
             modifier.node_group = node_group
         # Assign material to second modifier
         identifier = modifier.node_group.inputs['Material'].identifier
-        modifier[identifier] = material
+        modifier[identifier] = self.material.material
         # Copy modifier settings from source
         target_modifier = Modifier(source)
-        my_modifier = Modifier(onion_object)
+        my_modifier = Modifier(self.obj)
         my_modifier.collection = target_modifier.collection
         my_modifier.index = target_modifier.index + offset
 
         # Adjust object viewport properties to match material
 
+    def animation(self):
         # do the nla of the action, offset it by offset
         action = source.animation_data.action
         animation_data = onion_object.animation_data_create()
@@ -167,10 +199,13 @@ class OnionSkin():
         strip = nla_track.strips.new(
             action.name, action.frame_range[0] + offset, action)
 
-        return onion_object
+    def set_properties(self, props=None):
+        if not props:
+            props = self.props
+        for prop, value in self.props.items():
+            setattr(self.obj, prop, value)
 
-
-    def delete_onion(source, offset):
+    def delete():
         return
 
 

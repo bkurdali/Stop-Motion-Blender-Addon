@@ -20,16 +20,47 @@
 """
 Version Information
 Central class to provide version tagging, perhaps some kind of do_versions
-
+down the road if I can be bothered
 """
+
 MAJOR = 0
 MINOR = 7
+NAME = "STPMO"
+
+ONION = "onion"
+MAIN_OBJECT = "main"
+
+FRAME = "frame"
 
 def get():
     return (MAJOR, MINOR)
 
-def onion_prefix():
-    return f"STPMO_onion_"
 
-def onion_tag():
-    return
+def onion_prefix():
+    return f"{NAME}_{ONION}_"
+
+
+def tag():
+    return (NAME, {'major': MAJOR, 'minor':MINOR})
+
+
+def onion_tag(item):
+    """Leave breadcrumbs"""
+    item_tag = tag()
+    item_tag[1]['type'] = ONION
+    item[item_tag[0]] = item_tag[1]
+
+
+def main_tag(item):
+    """Leave breadcrumbs"""
+    item_tag = tag()
+    item_tag[1]['type'] = MAIN_OBJECT
+    item[item_tag[0]] = item_tag[1]
+
+
+def frame_name(index):
+    return f"{NAME}_{FRAME}_{index:04}"
+
+
+def collection_name(object):
+    return f"{NAME}_{FRAME}s_{object.name}"

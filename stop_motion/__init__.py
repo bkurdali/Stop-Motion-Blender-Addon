@@ -36,12 +36,11 @@ else:
     from . import version
 
 import bpy
-from .version import Version
 
 bl_info = {
     "name": "Stop Motion",
     "author": "Bassam Kurdali",
-    "version": Version.get(),
+    "version": version.get(),
     "blender": (3, 0, 0),
     "location": "View3D > Add > Stop Motion Object",
     "description": "Turns Blender into a Virtual Stop Motion Studio",

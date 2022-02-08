@@ -171,6 +171,26 @@ class StopMotionPanel(bpy.types.Panel):
         drawer.button(
             operator="object.stop_motion_updater_toggle",
             text="", icon=icon, props={})
+        row = self.new_row(col)
+        row.popover("OBJECT_PT_Stopmotion_Onion_Skin", text='', icon='GP_MULTIFRAME_EDITING')
+
+
+class OnionSkinPanel(bpy.types.Panel):
+    bl_label = "Onion Skin"
+    bl_idname = "OBJECT_PT_Stopmotion_Onion_Skin"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+
+    def draw(self, context):
+        layout = self.layout
+        layout.label(text="Oniiin")
+        """
+        enable/disable checkbox (default off)
+        frame offset slider
+        opacity slider
+        number of skins - before , number of skins after
+        color of skins - before, color of skins after
+        """
 
 # Menus
 
@@ -223,6 +243,7 @@ def register():
 
     bpy.utils.register_class(VIEW3D_MT_PIE_StopMotion)
     bpy.utils.register_class(VIEW3D_MT_PIE_StopMotion_Mode)
+    bpy.utils.register_class(OnionSkinPanel)
 
     bpy.utils.register_class(StopMotionPanel)
     extend_menus()
@@ -233,6 +254,10 @@ def unregister():
     KeyMaps.unmap()
     revert_menus()
     bpy.utils.unregister_class(StopMotionPanel)
+    bpy.utils.unregister_class(OnionSkinPanel)
+
+    bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion)
+    bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion_Mode)
 
 if __name__ == "__main__":
     register()
