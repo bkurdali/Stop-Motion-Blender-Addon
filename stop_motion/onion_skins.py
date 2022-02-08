@@ -208,30 +208,46 @@ class OnionSkin():
     def delete():
         return
 
+# Properties
 
-class OBJECT_OT_stopmotion_onion_skins(StopMotionOperator):
-    """Adjust number and offset of onion skins"""
-    bl_idname = "object.stopmotion_onion_skins"
-    bl_label = "Onion Skinning"
 
-    future_frames: bpy.props.IntProperty(
-        name="Future Frames", default=0, min=0, max=10)
+def onion_property_update(self, context):
+    """self is the Object that has the property being changed"""
+    pass
 
-    past_frames: bpy.props.IntProperty(
-        name="Past Frames", default=0, min=0, max=10)
 
-    offset: bpy.props.IntProperty(name="Offset", default=2, min=1)
+class StopMotionOnionSkinSettings(bpy.types.PropertyGroup):
+    """Onion Skin Settings, store per object"""
 
-    def execute(self, context):
-        stop_motion_object = context.object
-        modifier = Modifier(stop_motion_object)
-
-        return {'FINISHED'}
+    enable: bpy.props.BoolProperty(name="Enable", options=set(), default=False)
+    frame_offset: bpy.props.IntProperty(
+        name="Frame Offset", description="Number of Frames between Onion Skins",
+        options=set(), default=2, min=1, soft_max=5, max=20)
+    opacity: bpy.props.FloatProperty(
+        name="Opacity", options=set(), default=0.2, min=.005, max=.8)
+    before: bpy.props.IntProperty(
+        name="Skins Before", description="Number of Onion Skins before current frame",
+        options=set(), default=1, min=1, soft_max=4, max=10)
+    after: bpy.props.IntProperty(
+        name="Skins After", description="Number of Onion Skins after current frame",
+        options=set(), default=1, min=1, soft_max=4, max=10)
+    before_color:bpy.props.FloatVectorProperty(
+        name="Color Before", description="Onion Skin Color before current frame",
+        options=set(), subtype='COLOR', default=(1.0,0.0,0.0),
+        min=0.0, max=1.0, size=3)
+    after_color:bpy.props.FloatVectorProperty(
+        name="Color After", description="Onion Skin Color after current frame",
+        options=set(), subtype='COLOR', default=(0.0,1.0,0.2),
+        min=0.0, max=1.0, size=3)
 
 
 def register():
-    bpy.utils.register_class(OBJECT_OT_stopmotion_onion_skins)
+    bpy.utils.register_class(StopMotionOnionSkinSettings)
+    bpy.types.Object.onion_skin_settings = bpy.props.PointerProperty(
+        type=StopMotionOnionSkinSettings, name="Onion Skin Settings",
+        update=onion_property_update)
 
 
 def unregister():
-    bpy.utils.unregister_class(OBJECT_OT_stopmotion_onion_skins)
+    del bpy.types.Object.onion_skin_settings
+    bpy.utils.unregister_class(StopMotionOnionSkinSettings)

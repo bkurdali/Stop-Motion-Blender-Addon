@@ -163,40 +163,71 @@ class StopMotionPanel(bpy.types.Panel):
         col.scale_y = 2
 
         draw_first(context, col, self.new_row)
-        Draw(col, self.new_row, self.main_operators).buttons(context)
-        drawer = Draw(col, self.new_row, self.obj_operators)
-        drawer.buttons(context)
-        running = update_handler.is_running()
-        icon = 'PLAY' if not running else 'SNAP_FACE'
-        drawer.button(
-            operator="object.stop_motion_updater_toggle",
-            text="", icon=icon, props={})
-        row = self.new_row(col)
-        row.popover("OBJECT_PT_Stopmotion_Onion_Skin", text='', icon='GP_MULTIFRAME_EDITING')
+        if Modifier(ob):
+            col.separator(factor=0.8)
+            Draw(col, self.new_row, self.main_operators).buttons(context)
+            col.separator(factor=0.4)
+            drawer = Draw(col, self.new_row, self.obj_operators)
+            drawer.buttons(context)
+            col.separator(factor=0.4)
+            running = update_handler.is_running()
+            icon = 'PLAY' if not running else 'SNAP_FACE'
+            drawer.button(
+                operator="object.stop_motion_updater_toggle",
+                text="", icon=icon, props={})
+            col.separator(factor=0.4)
+            row = self.new_row(col)
+            row.popover("OBJECT_PT_stopmotion_onion_skin", text='', icon='GP_MULTIFRAME_EDITING')
 
 
 class OnionSkinPanel(bpy.types.Panel):
     bl_label = "Onion Skin"
-    bl_idname = "OBJECT_PT_Stopmotion_Onion_Skin"
+    bl_idname = "OBJECT_PT_stopmotion_onion_skin"
     bl_space_type = 'VIEW_3D'
     bl_region_type = 'UI'
 
     def draw(self, context):
+        pass
+
+
+class OnionSkinSettingsPanel(bpy.types.Panel):
+    bl_label = "Enable"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_parent_id = 'OBJECT_PT_stopmotion_onion_skin'
+
+    def draw_header(self, context):
+        settings = context.object.onion_skin_settings
+        self.layout.prop(settings, "enable", text="")
+
+    def draw(self, context):
         layout = self.layout
-        layout.label(text="Oniiin")
-        """
-        enable/disable checkbox (default off)
-        frame offset slider
-        opacity slider
-        number of skins - before , number of skins after
-        color of skins - before, color of skins after
-        """
+        layout.use_property_split = True
+        layout.use_property_decorate = False
+
+        settings = context.object.onion_skin_settings
+
+        layout.active = settings.enable
+        col = layout.column(align=True)
+        # layout.prop(settings, "enable")
+        col.prop(settings, "frame_offset")
+        col.prop(settings, "opacity")
+        layout.separator(factor=1.0)
+        col = layout.column(align=True)
+        row = col.row(align=True)
+        row.prop(settings, "before", text="")
+        row.label(text="", icon='GP_MULTIFRAME_EDITING')
+        row.prop(settings, "after", text="")
+        row = col.row(align=True)
+        row.prop(settings, "before_color", text="")
+        row.label(text="", icon='COLORSET_03_VEC')
+        row.prop(settings, "after_color", text="")
+
 
 # Menus
 
 
 class VIEW3D_MT_PIE_StopMotion(bpy.types.Menu):
-    # label is displayed at the center of the pie menu.
     bl_label = "Select Mode"
 
     def draw(self, context):
@@ -243,7 +274,9 @@ def register():
 
     bpy.utils.register_class(VIEW3D_MT_PIE_StopMotion)
     bpy.utils.register_class(VIEW3D_MT_PIE_StopMotion_Mode)
+
     bpy.utils.register_class(OnionSkinPanel)
+    bpy.utils.register_class(OnionSkinSettingsPanel)
 
     bpy.utils.register_class(StopMotionPanel)
     extend_menus()
@@ -254,6 +287,7 @@ def unregister():
     KeyMaps.unmap()
     revert_menus()
     bpy.utils.unregister_class(StopMotionPanel)
+    bpy.utils.unregister_class(OnionSkinSettingsPanel)
     bpy.utils.unregister_class(OnionSkinPanel)
 
     bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion)
