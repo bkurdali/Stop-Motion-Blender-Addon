@@ -53,7 +53,7 @@ bl_info = {
 TODO
 
 
-- NLA Track managing for onion skinning
+
 - better naming for collections, frames, etc.
 - Version tags for collections , objects, modifier/s (could be used for compatibility)
 
