@@ -151,14 +151,6 @@ class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
     bl_region_type = 'UI'
     bl_category = "StopMo"
 
-
-
-    def new_row(self, layout, scale=2):
-        row = layout.row()
-        row.ui_units_x = 200
-        row.scale_x = scale
-        return row
-
     def draw(self, context):
         width = context.region.width
         layout = self.layout
