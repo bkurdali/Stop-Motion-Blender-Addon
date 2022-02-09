@@ -21,14 +21,25 @@ import bpy
 import json
 import os
 
-"""
-TODOS:
-  Proper handling of blender types e.g. Collections or Objects in values
-  Recursive Serialization with nested node groups
-  For the above (and for frames) use nicer handling in set_element?
-  test with all the nodes (including reroutes)
-  Support for any node group type and for shader / copositor trees
-"""
+# TODO Save Metadata (type information, read only)
+# TODO Allow Saving multiple items in a single file
+# TODO Include Item type (e.g. GeometryNodeTree) in save so we can make code generic
+# TODO If None in a value, don't save (no point in setting it and we don't know type)
+# TODO Recursive
+
+# Fallback Functions
+
+def is_socket(item):
+    """Socket Test"""
+    return issubclass(type(item), bpy.types.NodeSocket)
+
+def get_socket_index(socket):
+    """Socket Fallback: return index as name is not unique"""
+    node = socket.node
+    for io_type in ("inputs", "outputs"):
+        for index, other_socket in enumerate(getattr(node, io_type)):
+            if socket == other_socket:
+                return index
 
 
 class Node_Tree():
@@ -37,6 +48,8 @@ class Node_Tree():
     exclusion = [
         "dimensions", "height", "internal_links", "inputs",
         "outputs", "rna_type"]
+
+    fall_backs = {is_socket: get_socket_index}
 
     def __init__(self, name, tree_data=None):
         """ name is a node group's name, tree data is it's serial form """
@@ -53,6 +66,9 @@ class Node_Tree():
         try:
             iter(datum)
         except TypeError:
+            for test, func in self.fall_backs.items():
+                if test(datum):
+                    return func(datum)
             if 'name' in dir(datum):
                 return datum.name
             return datum
@@ -67,6 +83,8 @@ class Node_Tree():
             return False
         value = getattr(data, prop)
         if callable(value):
+            return False
+        if value is None:
             return False
 
         return True

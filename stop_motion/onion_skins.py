@@ -23,15 +23,17 @@ if "bpy" in locals():
     importlib.reload(modifier_data)
     importlib.reload(json_nodes)
     importlib.reload(version)
+    importlib.reload(modes)
 else:
     from . import update_handler
     from . import modifier_data
     from . import json_nodes
     from . import version
+    from . import modes
 
 import bpy
 import os
-from .modifier_data import Modifier
+from .modifier_data import Modifier, StopMotionOperator
 
 
 class OnionCollection():
@@ -161,7 +163,7 @@ class OnionMaterial():
 class OnionSkin():
     """Creates or gets an onion skin"""
 
-    props = {"hide_select": True, "hide_render": True}
+    props = {"hide_select": True, "hide_render": True, "display": {"show_shadows": False}}
 
     def set_name(self):
         self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}_{self.source.name}"
@@ -233,7 +235,15 @@ class OnionSkin():
         if not props:
             props = self.props
         for prop, value in self.props.items():
-            setattr(self.obj, prop, value)
+            if type(value) is dict:
+                sub_obj = getattr(self.obj, prop)
+                for sub_prop, sub_value in value.items():
+                    setattr(sub_obj, sub_prop, sub_value)
+            else:
+                setattr(self.obj, prop, value)
+        for index, value in enumerate(self.color):
+            self.obj.color[index] = value
+        self.obj.color[3] = self.opacity
 
     def delete(self):
         self.collection.unlink(self.obj)
@@ -276,10 +286,33 @@ class OnionSkinManager():
                 if onion_skin_object:
                     items.append(onion_skin_object)
 
+    def refresh(self):
+        for side in self.objects:
+            for onion_skin_object in side:
+                onion_skin_object.animation()
+
     def onion_skins_unload(self):
         for items in self.objects:
             for onion_skin in items:
                 onion_skin.delete()
+# Operators
+
+
+def sync_onion_skins(scene, stop_motion_object):
+    """Sync NLA strips for stop motion object"""
+    # mode = stop_motion_object.mode
+    # modes.set_object(mode)
+    OnionSkinManager(scene, stop_motion_object).refresh()
+    # modes.restore(mode, stop_motion_object)
+
+class OBJECT_OT_sync_onion_skins(StopMotionOperator):
+    """Re-sync Onion Skins on animation length change"""
+    bl_idname = "object.sync_onion_skins"
+    bl_label = "Syncronize Onion Skins"
+
+    def execute(self, context):
+        sync_onion_skins(context.scene, context.object)
+        return {'FINISHED'}
 
 # Properties
 
@@ -329,8 +362,10 @@ def register():
     bpy.types.Object.onion_skin_settings = bpy.props.PointerProperty(
         type=StopMotionOnionSkinSettings, name="Onion Skin Settings"
         )
+    bpy.utils.register_class(OBJECT_OT_sync_onion_skins)
 
 
 def unregister():
+    bpy.utils.unregister_class(OBJECT_OT_sync_onion_skins)
     del bpy.types.Object.onion_skin_settings
     bpy.utils.unregister_class(StopMotionOnionSkinSettings)

@@ -22,10 +22,12 @@ if "bpy" in locals():
     importlib.reload(json_nodes)
     importlib.reload(modifier_data)
     importlib.reload(modes)
+    importlib.reload(onion_skins)
 else:
     from . import json_nodes
     from . import modifier_data
     from . import modes
+    from . import onion_skins
 
 import bpy
 import os
@@ -113,6 +115,7 @@ def insert_keyframe(context, source_data, use_copy=False):
     modifier.keyframe_index(context)
 
     obj.data = shape_ob.data
+    onion_skins.sync_onion_skins(context.scene, obj)
     modes.restore(mode, obj)
 
 
@@ -162,7 +165,7 @@ class SCREEN_OT_next_or_add_key(bpy.types.Operator):
     bl_label = "Next/Add Next Keyframe"
     bl_options = {'REGISTER', 'UNDO'}
 
-    frame_offset: bpy.props.IntProperty(default=0, min=0, soft_min=1, max=100)
+    frame_offset: bpy.props.IntProperty(default=2, min=0, soft_min=1, max=100)
     use_copy: bpy.props.BoolProperty(default=True)
 
     first_run = True

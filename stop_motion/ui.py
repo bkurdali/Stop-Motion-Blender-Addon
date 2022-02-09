@@ -78,63 +78,59 @@ class KeyMaps():
                 km.keymap_items.remove(kmi)
             cls.keymaps.clear()
 
-# Draw Functions
-
-
-def draw_first(context, layout, item_func):
-    """Draw the first Button, just for the panel"""
-    ob = context.object
-    mod = Modifier(ob)
-    width = context.region.width
-    row = item_func(layout, 2 if width > 100 else 1)
-    if not mod:
-        row.operator(
-            "object.add_stop_motion",
-            text="Initialize" if width > 200 else "", icon='PLUS')
-        return
-    icon = bpy.types.Object.bl_rna.properties["mode"].enum_items[ob.mode].icon
-    row.operator_menu_enum(
-        "object.stop_motion_mode", "mode",
-        text="Set Mode" if width > 200 else "",
-        icon=icon)
-
-
-class Draw():
-    sizes = (100, 200)
-
-    def __init__(self, layout, item_func, operators):
-        self.layout = layout
-        self.item_func = item_func
-        self.operators = operators
-
-    def button(self, operator, text, icon, props):
-        """ Draw a single Button """
-        item = self.item_func(self.layout, 2 if self.width > self.sizes[0] else 1).operator(
-            operator,
-            text=text if self.width > self.sizes[1] else "", icon=icon
-            )
-        for prop, value in props.items():
-            setattr(item, prop, value)
-
-    def buttons(self, context):
-        """ All the Operator Buttons """
-        # Operator idname, text, icon, props dict
-        self.width = context.region.width
-        for operator, text, icon, props in self.operators:
-            self.button(operator, text, icon, props)
-
 # Panels
 
 
-class StopMotionPanel(bpy.types.Panel):
-    """Creates a Panel in the scene context of the properties editor"""
-    bl_label = ""
-    bl_idname = "OBJECT_PT_Stopmotion"
-    bl_space_type = 'VIEW_3D'
-    bl_region_type = 'UI'
-    bl_category = "StopMo"
+class AdapativePanel():
+
+    small_icon = 100
+    large_icon = 200
+    # text gets displayed when width is larger than large icon
+
+    def scale(self, width):
+        """set element scale based on region width"""
+        if width < 100:
+            return 1
+        return 2
+
+    def item_text(self, text, width):
+        """Remove item label text when width is too small"""
+        if width < 200:
+            return ""
+        return text
+
+    def adaptive_row(self, layout, width):
+        row = layout.row()
+        row.scale_x = self.scale(width)
+        return row
+
+    def adaptive_col(self, layout, width):
+        col = layout.column()
+        col.scale_y = self.scale(width)
+        return col
+
+    def operator_button(self, layout, width, operator_id, text, icon, props):
+        row = self.adaptive_row(layout, width)
+        result = row.operator(
+            operator_id, text=self.item_text(text, width), icon=icon)
+        for prop, value in props.items():
+            setattr(result, prop, value)
+        return result
+
+    def operator_menu_enum(self, layout, width, operator_id, text, icon, prop):
+        row = self.adaptive_row(layout, width)
+        result = row.operator_menu_enum(
+            operator_id, prop,
+            text=self.item_text(text, width),
+            icon=icon)
+        return result
+
+    def pop_over(self, layout, width, panel, text, icon):
+        row = self.adaptive_row(layout, width)
+        row.popover(panel, text=self.item_text(text, width), icon=icon)
 
 
+class StopMotionControls():
     main_operators = [
         (
             "object.keyframe_stop_motion", "Insert Keyframe", 'DECORATE_KEYFRAME',
@@ -147,6 +143,16 @@ class StopMotionPanel(bpy.types.Panel):
         ("object.import_stop_motion_obj", "Import from OBJ", 'FILE', {}),
     ]
 
+class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
+    """Creates a Panel in the scene context of the properties editor"""
+    bl_label = ""
+    bl_idname = "OBJECT_PT_Stopmotion"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_category = "StopMo"
+
+
+
     def new_row(self, layout, scale=2):
         row = layout.row()
         row.ui_units_x = 200
@@ -154,34 +160,41 @@ class StopMotionPanel(bpy.types.Panel):
         return row
 
     def draw(self, context):
-        flow = layout = self.layout
+        width = context.region.width
+        layout = self.layout
+        ob = context.object
+        mod = Modifier(ob)
+
         layout.use_property_split = True
 
-        ob = context.object
-
         flow = layout.split()
+        col = self.adaptive_col(flow, width)
 
-        col = flow.column()
-        width = context.region.width
-        col.scale_y = 2 if width > 100 else 1
+        if not mod:
+            self.operator_button(
+                col, width, "object.add_stop_motion", "Initialize", 'PLUS', {})
+            return
 
-        draw_first(context, col, self.new_row)
-        if Modifier(ob):
-            col.separator(factor=0.8)
-            Draw(col, self.new_row, self.main_operators).buttons(context)
-            col.separator(factor=0.4)
-            drawer = Draw(col, self.new_row, self.obj_operators)
-            drawer.buttons(context)
-            col.separator(factor=0.4)
-            running = update_handler.is_running()
-            icon = 'PLAY' if not running else 'SNAP_FACE'
-            drawer.button(
-                operator="object.stop_motion_updater_toggle",
-                text="Toggle Updater" if width > 100 else "", icon=icon, props={})
+        icon = bpy.types.Object.bl_rna.properties["mode"].enum_items[ob.mode].icon
+        self.operator_menu_enum(
+            col, width, "object.stop_motion_mode", "Set Mode", icon, "mode")
+        col.separator(factor=0.8)
+
+        for operator_list in (self.main_operators, self.obj_operators):
+            for operator_id, text, icon, props in operator_list:
+                self.operator_button(col, width, operator_id, text, icon, props)
             col.separator(factor=0.4)
 
-            row = self.new_row(col, 2 if width > 100 else 1)
-            row.popover("OBJECT_PT_stopmotion_onion_skin", text="Onion Skins" if width > 200 else "", icon='GP_MULTIFRAME_EDITING')
+        running = update_handler.is_running()
+        icon = 'PLAY' if not running else 'SNAP_FACE'
+        self.operator_button(
+            col, width,
+            "object.stop_motion_updater_toggle", "Toggle Updater", icon, {})
+        col.separator(factor=0.4)
+
+        self.pop_over(
+            col, width,
+            "OBJECT_PT_stopmotion_onion_skin", "Onion Skins", 'GP_MULTIFRAME_EDITING')
 
 
 class OnionSkinPanel(bpy.types.Panel):
@@ -226,12 +239,16 @@ class OnionSkinSettingsPanel(bpy.types.Panel):
         row.prop(settings, "before_color", text="")
         row.label(text="", icon='COLORSET_03_VEC')
         row.prop(settings, "after_color", text="")
+        layout.separator(factor=.5)
+        row = layout.row()
+        row.operator("object.sync_onion_skins", text="Refresh", icon='FILE_REFRESH')
+        layout.separator(factor=1)
 
 
 # Menus
 
 
-class VIEW3D_MT_PIE_StopMotion(bpy.types.Menu):
+class VIEW3D_MT_PIE_StopMotion(bpy.types.Menu, StopMotionControls):
     bl_label = "Select Mode"
 
     def new_row(self, layout, dummy=2):
@@ -240,7 +257,10 @@ class VIEW3D_MT_PIE_StopMotion(bpy.types.Menu):
     def draw(self, context):
         layout = self.layout
         pie = layout.menu_pie()
-        Draw(pie, self.new_row, StopMotionPanel.main_operators).buttons(context)
+        for operator_id, text, icon, props in self.main_operators:
+            button = pie.operator(operator_id, text=text, icon=icon)
+            for prop, value in props.items():
+                setattr(button, prop, value)
 
 
 class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
@@ -257,6 +277,7 @@ class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
         if modifier:
             pie.operator_enum("object.stop_motion_mode", "mode")
         else:
+            print("typical ")
             pie.operator_enum("object.mode_set", "mode")
 
 
