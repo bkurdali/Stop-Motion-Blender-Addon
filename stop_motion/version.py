@@ -25,6 +25,7 @@ down the road if I can be bothered
 
 MAJOR = 0
 MINOR = 9
+SUB = 0
 NAME = "STPMO"
 
 ONION = "onion"
@@ -33,7 +34,7 @@ MAIN_OBJECT = "main"
 FRAME = "frame"
 
 def get():
-    return (MAJOR, MINOR)
+    return (MAJOR, MINOR, SUB)
 
 
 def onion_prefix():

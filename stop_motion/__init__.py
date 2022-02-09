@@ -25,7 +25,6 @@ if "bpy" in locals():
     importlib.reload(obj_io)
     importlib.reload(onion_skins)
     importlib.reload(preferences)
-    importlib.reload(version)
 else:
     from . import animation
     from . import ui
@@ -33,29 +32,24 @@ else:
     from . import obj_io
     from . import onion_skins
     from . import preferences
-    from . import version
 
 import bpy
 
 bl_info = {
     "name": "Stop Motion",
     "author": "Bassam Kurdali",
-    "version": version.get(),
+    "version": (0, 9, 0),
     "blender": (3, 0, 0),
-    "location": "View3D > Add > Stop Motion Object",
+    "location": "View3D > Sidebar",
     "description": "Turns Blender into a Virtual Stop Motion Studio",
-    "warning": "Alpha Version, Expect bugs and changes",
+    "warning": "Beta, Expect bugs and changes",
     "doc_url": "https://wiki.urchn.org/wiki/Stopmotion",
+    "tracker_url": "https://github.com/bkurdali/Stop-Motion-Blender-Addon",
     "category": "Animation",
 }
 
 """
 TODO
-
-
-
-- better naming for collections, frames, etc.
-- Version tags for collections , objects, modifier/s (could be used for compatibility)
 
 - Workspace Niceties (Beginner Friendly)
 - Streamline editing in text editor on export?
@@ -97,3 +91,4 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+    
