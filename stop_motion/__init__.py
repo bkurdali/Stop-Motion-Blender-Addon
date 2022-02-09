@@ -53,13 +53,14 @@ bl_info = {
 TODO
 
 
-- Onion Skinning
+- NLA Track managing for onion skinning
 - better naming for collections, frames, etc.
 - Version tags for collections , objects, modifier/s (could be used for compatibility)
 
 - Workspace Niceties (Beginner Friendly)
 - Streamline editing in text editor on export?
 - Error handling
+- Join Merge stop motions
 
 - Tests
 """

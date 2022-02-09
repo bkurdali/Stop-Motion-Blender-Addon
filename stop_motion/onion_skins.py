@@ -223,6 +223,7 @@ class OnionSkin():
     def animation(self):
         # do the nla of the action, offset it by offset
         action = self.source.animation_data.action
+        self.obj.animation_data_clear()
         animation_data = self.obj.animation_data_create()
         nla_track = animation_data.nla_tracks.new()
         strip = nla_track.strips.new(

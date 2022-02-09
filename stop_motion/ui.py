@@ -85,21 +85,22 @@ def draw_first(context, layout, item_func):
     """Draw the first Button, just for the panel"""
     ob = context.object
     mod = Modifier(ob)
-    row = item_func(layout)
+    width = context.region.width
+    row = item_func(layout, 2 if width > 100 else 1)
     if not mod:
         row.operator(
             "object.add_stop_motion",
-            text="", icon='PLUS')
+            text="Initialize" if width > 200 else "", icon='PLUS')
         return
-
     icon = bpy.types.Object.bl_rna.properties["mode"].enum_items[ob.mode].icon
     row.operator_menu_enum(
         "object.stop_motion_mode", "mode",
-        text="",
+        text="Set Mode" if width > 200 else "",
         icon=icon)
 
 
 class Draw():
+    sizes = (100, 200)
 
     def __init__(self, layout, item_func, operators):
         self.layout = layout
@@ -108,9 +109,9 @@ class Draw():
 
     def button(self, operator, text, icon, props):
         """ Draw a single Button """
-        item = self.item_func(self.layout).operator(
+        item = self.item_func(self.layout, 2 if self.width > self.sizes[0] else 1).operator(
             operator,
-            text=text, icon=icon
+            text=text if self.width > self.sizes[1] else "", icon=icon
             )
         for prop, value in props.items():
             setattr(item, prop, value)
@@ -118,6 +119,7 @@ class Draw():
     def buttons(self, context):
         """ All the Operator Buttons """
         # Operator idname, text, icon, props dict
+        self.width = context.region.width
         for operator, text, icon, props in self.operators:
             self.button(operator, text, icon, props)
 
@@ -135,20 +137,20 @@ class StopMotionPanel(bpy.types.Panel):
 
     main_operators = [
         (
-            "object.keyframe_stop_motion", "", 'DECORATE_KEYFRAME',
+            "object.keyframe_stop_motion", "Insert Keyframe", 'DECORATE_KEYFRAME',
             {"use_copy": True}),
-        ("screen.next_or_keyframe_stop_motion", "", 'NEXT_KEYFRAME', {}),
-        ("object.join_stop_motion", "", 'MOD_BOOLEAN', {}),
+        ("screen.next_or_keyframe_stop_motion", "Next/New Keyframe", 'NEXT_KEYFRAME', {}),
+        ("object.join_stop_motion", "Join Meshes", 'MOD_BOOLEAN', {}),
     ]
     obj_operators = [
-        ("object.export_stop_motion_obj", "", 'CURRENT_FILE', {}),
-        ("object.import_stop_motion_obj", "", 'FILE', {}),
+        ("object.export_stop_motion_obj", "Export to OBJ", 'CURRENT_FILE', {}),
+        ("object.import_stop_motion_obj", "Import from OBJ", 'FILE', {}),
     ]
 
-    def new_row(self, layout):
+    def new_row(self, layout, scale=2):
         row = layout.row()
         row.ui_units_x = 200
-        row.scale_x = 2
+        row.scale_x = scale
         return row
 
     def draw(self, context):
@@ -160,7 +162,8 @@ class StopMotionPanel(bpy.types.Panel):
         flow = layout.split()
 
         col = flow.column()
-        col.scale_y = 2
+        width = context.region.width
+        col.scale_y = 2 if width > 100 else 1
 
         draw_first(context, col, self.new_row)
         if Modifier(ob):
@@ -174,10 +177,11 @@ class StopMotionPanel(bpy.types.Panel):
             icon = 'PLAY' if not running else 'SNAP_FACE'
             drawer.button(
                 operator="object.stop_motion_updater_toggle",
-                text="", icon=icon, props={})
+                text="Toggle Updater" if width > 100 else "", icon=icon, props={})
             col.separator(factor=0.4)
-            row = self.new_row(col)
-            row.popover("OBJECT_PT_stopmotion_onion_skin", text='', icon='GP_MULTIFRAME_EDITING')
+
+            row = self.new_row(col, 2 if width > 100 else 1)
+            row.popover("OBJECT_PT_stopmotion_onion_skin", text="Onion Skins" if width > 200 else "", icon='GP_MULTIFRAME_EDITING')
 
 
 class OnionSkinPanel(bpy.types.Panel):
@@ -230,10 +234,13 @@ class OnionSkinSettingsPanel(bpy.types.Panel):
 class VIEW3D_MT_PIE_StopMotion(bpy.types.Menu):
     bl_label = "Select Mode"
 
+    def new_row(self, layout, dummy=2):
+        return layout
+
     def draw(self, context):
         layout = self.layout
         pie = layout.menu_pie()
-        Draw(pie, lambda x:x, StopMotionPanel.main_operators).buttons(context)
+        Draw(pie, self.new_row, StopMotionPanel.main_operators).buttons(context)
 
 
 class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
