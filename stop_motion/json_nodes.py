@@ -137,14 +137,14 @@ class Node_Tree():
             except Exception as e:
                 print(f"Warning: {e}: ", prop)        
 
-    def create(self):
+    def create(self, tree_type="GeometryNodeTree"):
         """ Create a New Node Tree """
 
         if self.node_group:
             return self.node_group
         
         self.node_group = bpy.data.node_groups.new(
-            self.name, "GeometryNodeTree")    
+            self.name, tree_type)
         node_tree = self.node_group
 
         # Create Group inputs and outputs
@@ -196,12 +196,12 @@ def write_node(group_name, path):
         json_file.write(json.dumps(group_data))
         
         
-def read_node(group_name, path):
+def read_node(group_name, path, tree_type="GeometryNodeTree"):
     """ Return Serialized Node Group from JSON format """
     return Node_Tree(
         group_name,
         tree_data=json.loads(open(path).read())
-        ).create()
+        ).create(tree_type=tree_type)
 
 if __name__ == "__main__":
     # Run this in resources/meshkey_devel.blend after tweaking MeshKey nodes

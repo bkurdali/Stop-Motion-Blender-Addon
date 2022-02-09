@@ -31,7 +31,7 @@ else:
 
 import bpy
 import os
-from .modifier_data import Modifier, StopMotionOperator
+from .modifier_data import Modifier
 
 
 class OnionCollection():
@@ -40,14 +40,17 @@ class OnionCollection():
     props = {
         "use_fake_user": True, "hide_select": True, "hide_render": True,}
 
-    def __init__(self, source):
+    def __init__(self,scene, source):
         self.source = source
+        self.scene = scene
         self.set_name()
         collections = bpy.data.collections
         self.collection = collections.get(self.name)
         if self.collection:
+            self.scene_attach()
             return
         self.collection = collections.new(self.name)
+        self.scene_attach()
         version.onion_tag(self.collection)
         self.set_properties()
 
@@ -61,9 +64,22 @@ class OnionCollection():
             setattr(self.collection, prop, value)
 
     def link(self, obj):
-        if obj.name not in self.collection.objects:
+        if obj and obj.name not in self.collection.objects:
             self.collection.objects.link(obj)
 
+    def unlink(self, obj):
+        if obj and obj.name in self.collection.objects:
+            self.collection.objects.unlink(obj)
+
+    def scene_attach(self):
+        if self.collection.name in self.scene.collection.children:
+            return
+        self.scene.collection.children.link(self.collection)
+
+    def scene_detach(self):
+        if self.collection.name not in self.scene.collection.children:
+            return
+        self.scene.collection.children.unlink(self.collection)
 
 class OnionMaterial():
     """Wrapper for Onion Skin Material"""
@@ -73,9 +89,7 @@ class OnionMaterial():
         "use_backface_culling": True, "roughness": 1, "use_fake_user": True
         }
 
-    diffuse_color = ([1 , 0, 0, .2], [0, 1, 0, .2])
-
-    def __init__(self, offset, index):
+    def __init__(self, offset, index, color, opacity):
 
         self.forward = offset > 0
         self.index = index
@@ -83,12 +97,18 @@ class OnionMaterial():
         materials = bpy.data.materials
         self.material = materials.get(self.name)
         if self.material:
+            self.inputs = self.material.node_tree.nodes['Group'].inputs
+            self.color = color
+            self.opacity = opacity
             return # Material exists, we're done here
         # Create and setup new material
         self.material = materials.new(self.name)
         version.onion_tag(self.material)
         self.set_properties()
         self.set_node_tree()
+        self.inputs = self.material.node_tree.nodes['Group'].inputs
+        self.color = color
+        self.opacity = opacity
 
     def set_node_tree(self):
         material = self.material
@@ -99,20 +119,20 @@ class OnionMaterial():
         # create group node
         group_node = material.node_tree.nodes.new(type='ShaderNodeGroup')
         filepath = os.path.join(os.path.dirname(__file__), "material.json")
-        onion_group = json_nodes.read_node("Oniony", filepath)
+        onion_group = json_nodes.read_node("Oniony", filepath, tree_type="ShaderNodeTree")
         group_node.node_tree = onion_group
         # link the group to the material output
-        link = node_tree.links.new(
-            node_from="", node_to="", socket_from="", socket_to="")
+        link = material. node_tree.links.new(
+            group_node.outputs['Shader'],
+            material.node_tree.nodes['Material Output'].inputs['Surface'])
         self.inputs = group_node.inputs
-        self.inputs['Color'] = self.diffuse_color[self.forward]
 
     def set_properties(self, props=None):
         if not props:
             props = self.props
         for prop, value in self.props.items():
             setattr(self.material, prop, value)
-        self.material.diffuse_color = self.diffuse_color[self.forward]
+
 
     @property
     def opacity(self):
@@ -143,61 +163,70 @@ class OnionSkin():
 
     props = {"hide_select": True, "hide_render": True}
 
-    color = ([1 , 0, 0, .2], [0, 1, 0, .2])
-
     def set_name(self):
         self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}_{self.source.name}"
 
-    def __init__(self, source, offset, index):
+    def __init__(self, scene, source, offset, index, color, opacity, create):
         """ Create an onion skin object """
-        self.forward = offset > 0 # What direction am I in?
+        self.forward = offset > 0
         self.source = source
         self.offset = offset
         self.index = index
+        self.color = color
+        self.opacity = opacity
 
-        self.collection = OnionCollection(source)
+        self.collection = OnionCollection(scene, source)
         # Create the object
         self.set_name()
         objects = bpy.data.objects
-        self.obj = objects.get(name)
-        if self.obj:
-            self.collection.link(self.obj)
+        self.obj = objects.get(self.name)
+        if not create:
+            if self.obj:
+                self.delete()
             return
-        self.obj = objects.new(name=self.name, object_data=source.data)
-        version.onion_tag(self.obj)
+        if not self.obj:
+            self.obj = objects.new(name=self.name, object_data=source.data)
+            version.onion_tag(self.obj)
         self.collection.link(self.obj)
+        self.modifier()
         self.set_properties()
+        self.animation()
+
+    def __bool__(self):
+        return True if self.obj else False
 
     def modifier(self):
         # Create the material
-        self.material = OnionMaterial(self.offset, self.index)
-
+        self.material = OnionMaterial(
+            self.offset, self.index, self.color, self.opacity)
+        if Modifier(self.obj):
+            return
         # add the modifiers
         for name, json_path, modname in (
                 ("MeshKey", "modifier.json", Modifier.name),
                 ("Materialize", "materializer.json", "Materializer")):
             node_group = json_nodes.read_node(
                 name, os.path.join(os.path.dirname(__file__), json_path))
-            modifier = onion_object.modifiers.new(modname, 'NODES')
+            modifier = self.obj.modifiers.new(modname, 'NODES')
             modifier.node_group = node_group
         # Assign material to second modifier
         identifier = modifier.node_group.inputs['Material'].identifier
         modifier[identifier] = self.material.material
         # Copy modifier settings from source
-        target_modifier = Modifier(source)
+        target_modifier = Modifier(self.source)
         my_modifier = Modifier(self.obj)
         my_modifier.collection = target_modifier.collection
-        my_modifier.index = target_modifier.index + offset
+        my_modifier.index = target_modifier.index + self.offset
 
         # Adjust object viewport properties to match material
 
     def animation(self):
         # do the nla of the action, offset it by offset
-        action = source.animation_data.action
-        animation_data = onion_object.animation_data_create()
+        action = self.source.animation_data.action
+        animation_data = self.obj.animation_data_create()
         nla_track = animation_data.nla_tracks.new()
         strip = nla_track.strips.new(
-            action.name, action.frame_range[0] + offset, action)
+            action.name, action.frame_range[0] - self.offset , action)
 
     def set_properties(self, props=None):
         if not props:
@@ -205,47 +234,100 @@ class OnionSkin():
         for prop, value in self.props.items():
             setattr(self.obj, prop, value)
 
-    def delete():
-        return
+    def delete(self):
+        self.collection.unlink(self.obj)
+
+
+class OnionSkinManager():
+    """handle onion skins for a given object"""
+
+    maximum = 10
+
+    def __init__(self,scene, stop_motion_object):
+        self.stop_motion_object = stop_motion_object
+        settings  = stop_motion_object.onion_skin_settings
+        self.enable = settings.enable
+        self.opacity = settings.opacity
+        self.offset = settings.frame_offset
+        self.count = (settings.before, settings.after)
+        self.color = (settings.before_color, settings.after_color)
+        self.scene = scene
+        self.onion_skins_load()
+
+    def __bool__(self):
+        return True if any([items for items in self.objects]) else False
+
+    def onion_skins_load(self):
+        self.objects =[[],[]]
+        for side, items in enumerate(self.objects):
+
+            for index in range(self.maximum):
+                create = self.enable and index < self.count[side]
+                sign = -1 if side == 0 else 1
+                # set proper time offset
+                # set proper opacity offset
+                opacity = self.opacity * (self.count[side] - index) / self.count[side]
+                offset = sign * (self.offset + self.offset * index)
+                onion_skin_object = OnionSkin(
+                    self.scene,
+                    self.stop_motion_object, offset ,
+                    index, self.color[side], opacity, create)
+                if onion_skin_object:
+                    items.append(onion_skin_object)
+
+    def onion_skins_unload(self):
+        for items in self.objects:
+            for onion_skin in items:
+                onion_skin.delete()
 
 # Properties
 
 
+def onion_property_enable(self, context):
+    stop_motion_object = context.object
+    onion_skin_objects = OnionSkinManager(context.scene, stop_motion_object)
+
+
 def onion_property_update(self, context):
-    """self is the Object that has the property being changed"""
-    pass
+    if not self.enable:
+        return
+    stop_motion_object = context.object
+    onion_skin_objects = OnionSkinManager(context.scene, stop_motion_object)
 
 
 class StopMotionOnionSkinSettings(bpy.types.PropertyGroup):
     """Onion Skin Settings, store per object"""
 
-    enable: bpy.props.BoolProperty(name="Enable", options=set(), default=False)
+    enable: bpy.props.BoolProperty(
+        name="Enable", options=set(), default=False, update=onion_property_enable)
     frame_offset: bpy.props.IntProperty(
         name="Frame Offset", description="Number of Frames between Onion Skins",
-        options=set(), default=2, min=1, soft_max=5, max=20)
+        options=set(), default=2, min=1, soft_max=5, max=20, update=onion_property_update)
     opacity: bpy.props.FloatProperty(
-        name="Opacity", options=set(), default=0.2, min=.005, max=.8)
+        name="Opacity", options=set(), default=0.2, min=.005, max=.8, update=onion_property_update)
     before: bpy.props.IntProperty(
         name="Skins Before", description="Number of Onion Skins before current frame",
-        options=set(), default=1, min=1, soft_max=4, max=10)
+        options=set(), default=1, min=1, soft_max=4,
+        max=OnionSkinManager.maximum, update=onion_property_update)
     after: bpy.props.IntProperty(
         name="Skins After", description="Number of Onion Skins after current frame",
-        options=set(), default=1, min=1, soft_max=4, max=10)
+        options=set(), default=1, min=1, soft_max=4,
+        max=OnionSkinManager.maximum, update=onion_property_update)
     before_color:bpy.props.FloatVectorProperty(
         name="Color Before", description="Onion Skin Color before current frame",
         options=set(), subtype='COLOR', default=(1.0,0.0,0.0),
-        min=0.0, max=1.0, size=3)
+        min=0.0, max=1.0, size=3, update=onion_property_update)
     after_color:bpy.props.FloatVectorProperty(
         name="Color After", description="Onion Skin Color after current frame",
         options=set(), subtype='COLOR', default=(0.0,1.0,0.2),
-        min=0.0, max=1.0, size=3)
+        min=0.0, max=1.0, size=3, update=onion_property_update)
 
 
 def register():
     bpy.utils.register_class(StopMotionOnionSkinSettings)
     bpy.types.Object.onion_skin_settings = bpy.props.PointerProperty(
-        type=StopMotionOnionSkinSettings, name="Onion Skin Settings",
-        update=onion_property_update)
+        type=StopMotionOnionSkinSettings, name="Onion Skin Settings"
+        )
 
 
 def unregister():
