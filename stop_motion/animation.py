@@ -23,11 +23,13 @@ if "bpy" in locals():
     importlib.reload(modifier_data)
     importlib.reload(modes)
     importlib.reload(onion_skins)
+    importlib.reload(version)
 else:
     from . import json_nodes
     from . import modifier_data
     from . import modes
     from . import onion_skins
+    from . import version
 
 import bpy
 import os
@@ -52,11 +54,12 @@ class OBJECT_OT_add_stop_motion(bpy.types.Operator):
 
         # Create Source Collection
         stop_motion_collection = bpy.data.collections.new(
-            name=Modifier.collection_name)
+            name=version.collection_name(stop_motion_object))
         # Instead of linking fake user to prevent accidents
         stop_motion_collection.use_fake_user = True
         stop_motion_collection.hide_render = True
         stop_motion_collection.hide_viewport = True
+        version.main_tag(stop_motion_collection)
 
         first_frame = stop_motion_object.copy()
 
@@ -68,9 +71,10 @@ class OBJECT_OT_add_stop_motion(bpy.types.Operator):
                 name, os.path.join(os.path.dirname(__file__), json_path))
             modifier = stop_motion_object.modifiers.new(modname, 'NODES')
             modifier.node_group = node_group
-        modifier.show_viewport = modifier.show_in_editmode = False # Don't realize by default
+        # Don't show realize in viewport by default
+        modifier.show_viewport = modifier.show_in_editmode = False
 
-        modifier = Modifier(stop_motion_object) # for convenient access
+        modifier = Modifier(stop_motion_object)
         modifier.collection = stop_motion_collection
         modifier.index = 0
         modifier.keyframe_index(context)
@@ -82,7 +86,7 @@ class OBJECT_OT_add_stop_motion(bpy.types.Operator):
         for c in old_collections:
             c.objects.unlink(first_frame)
         stop_motion_collection.objects.link(first_frame)
-
+        version.main_tag(stop_motion_object)
         return {'FINISHED'}
 
 # Animation Operators

@@ -164,6 +164,7 @@ class OnionSkin():
     """Creates or gets an onion skin"""
 
     props = {"hide_select": True, "hide_render": True, "display": {"show_shadows": False}}
+    copy_props = ["parent", "parent_type", "matrix_parent_inverse", "matrix_world"]
 
     def set_name(self):
         self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}_{self.source.name}"
@@ -192,6 +193,7 @@ class OnionSkin():
         self.collection.link(self.obj)
         self.modifier()
         self.set_properties()
+        self.set_transform()
         self.animation()
 
     def __bool__(self):
@@ -247,6 +249,11 @@ class OnionSkin():
 
     def delete(self):
         self.collection.unlink(self.obj)
+
+    def set_transform(self):
+        if self.obj and self.source:
+            for prop in self.copy_props:
+                setattr(self.obj, prop, getattr(self.source, prop))
 
 
 class OnionSkinManager():

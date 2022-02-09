@@ -55,12 +55,13 @@ def main_tag(item):
     """Leave breadcrumbs"""
     item_tag = tag()
     item_tag[1]['type'] = MAIN_OBJECT
+    item_tag[1]['name'] = item.name
     item[item_tag[0]] = item_tag[1]
 
 
-def frame_name(index):
-    return f"{NAME}_{FRAME}_{index:04}"
+def frame_name(index, obj):
+    return f"{NAME}_{FRAME}_{obj.name}_{index:04}"
 
 
-def collection_name(object):
-    return f"{NAME}_{FRAME}s_{object.name}"
+def collection_name(obj):
+    return f"{NAME}_{FRAME}s_{obj.name}"

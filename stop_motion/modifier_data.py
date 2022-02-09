@@ -17,6 +17,12 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+if "bpy" in locals():
+    import importlib
+    importlib.reload(version)
+else:
+    from . import version
+
 import bpy
 
 MODNAME = "StopMotion"
@@ -29,9 +35,9 @@ class Modifier():
     """ Convenience Stop Motion Modifier Access Class """
 
     name = MODNAME
-    collection_name = COLNAME
 
     def __init__(self, obj):
+        self.obj = obj
         if not obj:
             self.modifier = None
         else:
@@ -62,10 +68,14 @@ class Modifier():
 
     @property
     def collection(self):
+        if not self.modifier:
+            return None
         return self.modifier[self.__collection__]
 
     @collection.setter
     def collection(self, value):
+        if not self.modifier:
+            return
         self.modifier[self.__collection__] = value
 
     def get_fcurve(self):
@@ -103,10 +113,11 @@ class Modifier():
         return False
 
     def object_name(self, index=None):
+        """Return properly indexed object frame name"""
         if index is None:
             index = self.index
         # Might adjust formatting later to minimize collisions?
-        return f"{index:04}"
+        return version.frame_name(index, self.obj)
 
     def get_object(self, index=None):
         name = self.object_name(index)

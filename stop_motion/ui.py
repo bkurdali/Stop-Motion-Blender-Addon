@@ -143,6 +143,7 @@ class StopMotionControls():
         ("object.import_stop_motion_obj", "Import from OBJ", 'FILE', {}),
     ]
 
+
 class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
     """Creates a Panel in the scene context of the properties editor"""
     bl_label = ""
@@ -275,7 +276,7 @@ class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
 
 def add_object_button(self, context):
     self.layout.operator(
-        OBJECT_OT_add_stop_motion.bl_idname,
+        "object.add_stop_motion",
         text="Add Stop Motion Object",
         icon='PLUGIN')
 
