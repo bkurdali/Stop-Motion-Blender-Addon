@@ -1,3 +1,6 @@
+[![Video](https://img.youtube.com/vi/iJ_brdBUCNA/maxresdefault.jpg)](https://youtu.be/iJ_brdBUCNA)
+
+
 # Stop Motion
 Blender Addon for Frame by Frame 3D Animation
 
