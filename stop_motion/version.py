@@ -25,7 +25,7 @@ down the road if I can be bothered
 
 MAJOR = 0
 MINOR = 9
-SUB = 0
+SUB = 1
 NAME = "STPMO"
 
 ONION = "onion"

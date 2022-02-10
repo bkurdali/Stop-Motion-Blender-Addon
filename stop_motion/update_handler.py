@@ -56,4 +56,5 @@ def remove(handler):
 
 
 def add():
-    bpy.app.handlers.frame_change_post.append(stop_motion_data)
+    if not is_running():
+        bpy.app.handlers.frame_change_post.append(stop_motion_data)

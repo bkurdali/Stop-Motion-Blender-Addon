@@ -169,8 +169,9 @@ class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
             return
 
         icon = bpy.types.Object.bl_rna.properties["mode"].enum_items[ob.mode].icon
-        self.operator_menu_enum(
+        menu = self.operator_menu_enum(
             col, width, "object.stop_motion_mode", "Set Mode", icon, "mode")
+        menu.toggle = False
         col.separator(factor=0.8)
 
         for operator_list in (self.main_operators, self.obj_operators):
@@ -271,7 +272,8 @@ class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
             pie.operator_enum("object.stop_motion_mode", "mode")
         else:
             print("typical ")
-            pie.operator_enum("object.mode_set", "mode")
+            menu = pie.operator_enum("object.mode_set", "mode")
+            menu.toggle = False
 
 
 def add_object_button(self, context):

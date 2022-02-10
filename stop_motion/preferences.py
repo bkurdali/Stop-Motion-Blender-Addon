@@ -61,11 +61,11 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         layout.prop(self, "tab_for_pie_menu")
         layout.separator()
         layout.label(text="OBJ IO Preferences")
-        layout.props(self, "use_normals")
-        layout.props(self, "use_uvs")
-        layout.props(self, "use_materials")
-        layout.props(self, "use_vertex_groups")
-        layout.props(self, "use_smooth_groups")
+        layout.prop(self, "use_normals")
+        layout.prop(self, "use_uvs")
+        layout.prop(self, "use_materials")
+        layout.prop(self, "use_vertex_groups")
+        layout.prop(self, "use_smooth_groups")
 
 
 def register():
