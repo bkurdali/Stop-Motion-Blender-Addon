@@ -231,7 +231,7 @@ class OnionSkin():
         animation_data = self.obj.animation_data_create()
         nla_track = animation_data.nla_tracks.new()
         strip = nla_track.strips.new(
-            action.name, action.frame_range[0] - self.offset , action)
+            action.name, int(action.frame_range[0] - self.offset) , action)
 
     def set_properties(self, props=None):
         if not props:
