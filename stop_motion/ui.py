@@ -83,51 +83,55 @@ class KeyMaps():
 
 class AdapativePanel():
 
-    small_icon = 100
-    large_icon = 200
+    small_icon = 80
+    large_icon = 180
     # text gets displayed when width is larger than large icon
 
-    def scale(self, width):
+    def responsive(self, context):
+        """Must be called first by draw function!!!"""
+        self.width = context.region.width / context.preferences.view.ui_scale
+
+    def scale(self):
         """set element scale based on region width"""
-        if width < 100:
+        if self.width < self.small_icon:
             return 1
         return 2
 
-    def item_text(self, text, width):
+    def item_text(self, text):
         """Remove item label text when width is too small"""
-        if width < 200:
+        if self.width < self.large_icon:
             return ""
         return text
 
-    def adaptive_row(self, layout, width):
+    def adaptive_row(self, layout):
         row = layout.row()
-        row.scale_x = self.scale(width)
+        row.scale_x = self.scale()
         return row
 
-    def adaptive_col(self, layout, width):
+    def adaptive_col(self, layout):
         col = layout.column()
-        col.scale_y = self.scale(width)
+        col.scale_y = self.scale()
         return col
 
-    def operator_button(self, layout, width, operator_id, text, icon, props):
-        row = self.adaptive_row(layout, width)
+    def operator_button(self, layout, operator_id, text, icon, props):
+        row = self.adaptive_row(layout)
         result = row.operator(
-            operator_id, text=self.item_text(text, width), icon=icon)
+            operator_id, text=self.item_text(text), icon=icon)
         for prop, value in props.items():
             setattr(result, prop, value)
         return result
 
-    def operator_menu_enum(self, layout, width, operator_id, text, icon, prop):
-        row = self.adaptive_row(layout, width)
+    def operator_menu_enum(self, layout, operator_id, text, icon, prop):
+        row = self.adaptive_row(layout)
         result = row.operator_menu_enum(
             operator_id, prop,
-            text=self.item_text(text, width),
+            text=self.item_text(text),
             icon=icon)
         return result
 
-    def pop_over(self, layout, width, panel, text, icon):
-        row = self.adaptive_row(layout, width)
-        row.popover(panel, text=self.item_text(text, width), icon=icon)
+    def pop_over(self, layout, panel, text, icon):
+        row = self.adaptive_row(layout)
+        row.popover(panel, text=self.item_text(text), icon=icon)
 
 
 class StopMotionControls():
@@ -153,41 +157,43 @@ class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
     bl_category = "StopMo"
 
     def draw(self, context):
-        width = context.region.width
+        self.responsive(context)
+
         layout = self.layout
+
         ob = context.object
         mod = Modifier(ob)
 
         layout.use_property_split = True
 
         flow = layout.split()
-        col = self.adaptive_col(flow, width)
+        col = self.adaptive_col(flow)
 
         if not mod:
             self.operator_button(
-                col, width, "object.add_stop_motion", "Initialize", 'PLUS', {})
+                col, "object.add_stop_motion", "Initialize", 'PLUS', {})
             return
 
         icon = bpy.types.Object.bl_rna.properties["mode"].enum_items[ob.mode].icon
         menu = self.operator_menu_enum(
-            col, width, "object.stop_motion_mode", "Set Mode", icon, "mode")
+            col, "object.stop_motion_mode", "Set Mode", icon, "mode")
         menu.toggle = False
         col.separator(factor=0.8)
 
         for operator_list in (self.main_operators, self.obj_operators):
             for operator_id, text, icon, props in operator_list:
-                self.operator_button(col, width, operator_id, text, icon, props)
+                self.operator_button(col, operator_id, text, icon, props)
             col.separator(factor=0.4)
 
         running = update_handler.is_running()
         icon = 'PLAY' if not running else 'SNAP_FACE'
         self.operator_button(
-            col, width,
+            col,
             "object.stop_motion_updater_toggle", "Toggle Updater", icon, {})
         col.separator(factor=0.4)
 
         self.pop_over(
-            col, width,
+            col,
             "OBJECT_PT_stopmotion_onion_skin", "Onion Skins", 'GP_MULTIFRAME_EDITING')
 
 
