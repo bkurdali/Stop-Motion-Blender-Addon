@@ -245,6 +245,23 @@ class OnionSkinSettingsPanel(bpy.types.Panel):
         layout.separator(factor=1)
 
 
+class StopMotionMaterialPanel(bpy.types.Panel):
+    bl_label = "Materials"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+    bl_parent_id = 'MATERIAL_PT_stopmotion_materials'
+
+    def draw(self, context):
+        layout = self.layout
+
+        row = layout.row()
+        row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=rows)
+        col = row.column(align=True)
+        col.operator("object.material_slot_add", icon='ADD', text="")
+        col.operator("object.material_slot_remove", icon='REMOVE', text="")
+        col.separator()
+        col.menu("MATERIAL_MT_context_menu", icon='DOWNARROW_HLT', text="")
+        
 # Menus
 
 

@@ -22,6 +22,7 @@ if "bpy" in locals():
     importlib.reload(modifier_data)
 else:
     from . import modifier_data
+    from . import materials
 import bpy
 from .modifier_data import Modifier
 
@@ -31,7 +32,9 @@ def stop_motion_data(scene):
     stop_motion_object = bpy.context.object
     mode = stop_motion_object.mode
     bpy.ops.object.mode_set(mode='OBJECT')
-    stop_motion_object.data = Modifier(stop_motion_object).get_object().data
+    source_object = Modifier(stop_motion_object).get_object()
+    stop_motion_object.data = source_object.data
+    materials.sync(source_object, stop_motion_object)
     bpy.ops.object.mode_set(mode=mode)
 
 
