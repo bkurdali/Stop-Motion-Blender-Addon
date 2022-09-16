@@ -102,3 +102,10 @@ class MATERIAL_OT_stopmotion_slot_add(bpy.types.Operator):
 class MATERIAL_OT_stopmotion_slot_del(bpy.types.Operator):
     pass
 
+
+class MATERIAL_OT_stopmotion_push(bpy.types.Operator):
+    pass
+
+
+class MATERIAL_OT_stopmotion_pull(bpy.types.Operator):
+    pass
