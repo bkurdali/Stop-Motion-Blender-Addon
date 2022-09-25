@@ -137,5 +137,12 @@ class StopMotionOperator(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
+        ob = context.object
+        if not ob:
+            cls.poll_message_set("No Active Object")
+            return False
+        if not Modifier(ob):
+            cls.poll_message_set(f"{ob.name} Not Initialized")
+            return False
         return context.object and Modifier(context.object)
 

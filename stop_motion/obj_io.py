@@ -51,18 +51,27 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
             return {'CANCELLED'}
         stop_motion_object = context.object
         preferences = context.preferences.addons[__package__].preferences
-        bpy.ops.import_scene.obj(
-            filepath=filepath, use_split_objects=True,
-            use_split_groups=False, use_groups_as_vgroups=True,
-            use_image_search=True, split_mode='ON', global_clamp_size=0,
-            use_edges=False, use_smooth_groups=preferences.use_smooth_groups,
-            axis_forward='Y', axis_up='Z')
+
+        bpy.ops.wm.obj_import(
+            filepath=filepath,
+            clamp_size=0,
+
+            forward_axis='Y', up_axis='Z',
+
+            import_vertex_groups=False, validate_meshes=False)
+
+
         imported_objects = bpy.context.selected_objects
+
+
+        stop_motion_object.select_set(True)
+        context.view_layer.objects.active = stop_motion_object
+
         bpy.ops.object.keyframe_stop_motion(use_copy=False)
         for ob in imported_objects:
             if ob is not stop_motion_object:
                 bpy.data.objects.remove(ob, do_unlink=True)
-        stop_motion_object.select_set(True)
+
         return {'FINISHED'}
 
 
@@ -77,26 +86,54 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
             self.report({'WARNING'}, "Save Blend file first")
             return {'CANCELLED'}
         stop_motion_object = context.object
+        filepath = path(context)
+        selected_objects = [ob for ob in context.selected_objects]
         preferences = context.preferences.addons[__package__].preferences
         mode = stop_motion_object.mode
         modes.set_object(mode)
         data = Modifier(stop_motion_object).get_object().data
-        stop_motion_object.data = data
+
+        export_object = bpy.data.objects.new(
+            name=f"{stop_motion_object.name}_export",object_data=data)
+        context.collection.objects.link(export_object)
+
+        stop_motion_object.select_set(False)
+        export_object.select_set(True)
+        context.view_layer.objects.active = export_object
+
+        # stop_motion_object.data = data
         # export obj with the right settings
-        bpy.ops.export_scene.obj(
-            filepath=path(context),
-            check_existing=False, use_selection=True,
-            use_animation=False, use_mesh_modifiers=False, use_edges=False,
-            use_smooth_groups=preferences.use_smooth_groups,
-            use_smooth_groups_bitflags=False,
-            use_normals=preferences.use_normals, use_uvs=False,
-            use_materials=preferences.use_materials, use_triangles=False,
-            use_nurbs=False, use_vertex_groups=preferences.use_vertex_groups,
-            use_blen_objects=True, group_by_object=False,
-            group_by_material=False, keep_vertex_order=True,
-            global_scale=1, path_mode='AUTO',
-            axis_forward='Y', axis_up='Z'
-            )
+
+        bpy.ops.wm.obj_export(
+            filepath=filepath,
+            path_mode='AUTO',
+            check_existing=False,
+            export_selected_objects=True,
+            export_animation=False,
+            forward_axis='Y', up_axis='Z', scaling_factor=1,
+
+            apply_modifiers=False, export_eval_mode='DAG_EVAL_VIEWPORT',
+
+            export_triangulated_mesh=False, export_curves_as_nurbs=False,
+            export_object_groups=False,
+            export_material_groups=False,
+
+
+            export_uv=preferences.use_uvs,
+            export_normals=preferences.use_normals,
+            export_colors=preferences.use_colors,
+            export_materials=preferences.use_materials,
+
+            export_vertex_groups=preferences.use_vertex_groups,
+            export_smooth_groups=preferences.use_smooth_groups,
+            smooth_group_bitflags=False,)
+
+        bpy.data.objects.remove(export_object)
+
+        stop_motion_object.select_set(True)
+        context.view_layer.objects.active = stop_motion_object
+
+
         modes.restore(mode, stop_motion_object)
         return {'FINISHED'}
 

@@ -54,6 +54,10 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         name="Use Vertex Groups",
         default=False)
 
+    use_colors:bpy.props.BoolProperty(
+        name="Use Colors",
+        default=False)
+
     def draw(self, context):
         layout = self.layout
         layout.label(text="Stop Motion Preferences")
@@ -66,6 +70,7 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         layout.prop(self, "use_materials")
         layout.prop(self, "use_vertex_groups")
         layout.prop(self, "use_smooth_groups")
+        layout.prop(self, "use_colors")
 
 
 def register():
