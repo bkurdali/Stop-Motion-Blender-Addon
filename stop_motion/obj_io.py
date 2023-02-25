@@ -110,7 +110,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
             check_existing=False,
             export_selected_objects=True,
             export_animation=False,
-            forward_axis='Y', up_axis='Z', scaling_factor=1,
+            forward_axis='Y', up_axis='Z', global_scale=1,
 
             apply_modifiers=False, export_eval_mode='DAG_EVAL_VIEWPORT',
 
