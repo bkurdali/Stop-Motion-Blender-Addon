@@ -56,7 +56,7 @@ class Modifier():
         return True if self.modifier else False
 
     def __get_input_label__(self, input):
-        return self.modifier.node_group.inputs[input].identifier
+        return self.modifier.node_group.interface.items_tree[input].identifier
 
     @property
     def index(self):
