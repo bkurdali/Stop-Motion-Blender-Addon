@@ -128,7 +128,7 @@ class Node_Tree():
         return self.serialize_element(io, ["bl_socket_idname",])
 
     def serialize(self):
-        """ TODO Fix for Blender 4.0+ Serialize a Node Tree """
+        """Serialize a Node Tree """
         self.tree_data = {
             "nodes": {
                 node.name: self.serialize_node(node)
@@ -139,11 +139,13 @@ class Node_Tree():
                 ],
             "inputs": [
                 self.serialize_group_io(input)
-                for input in self.node_group.inputs
+                for input in self.node_group.interface.items_tree
+                if input.item_type == 'SOCKET' and input.in_out == "INPUT"
                 ],
             "outputs": [
                 self.serialize_group_io(output)
-                for output in self.node_group.outputs
+                for output in self.node_group.interface.items_tree
+                if input.item_type == 'SOCKET' and output.in_out == "OUTPUT"
                 ]
             }
 
