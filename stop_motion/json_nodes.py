@@ -145,7 +145,7 @@ class Node_Tree():
             "outputs": [
                 self.serialize_group_io(output)
                 for output in self.node_group.interface.items_tree
-                if input.item_type == 'SOCKET' and output.in_out == "OUTPUT"
+                if output.item_type == 'SOCKET' and output.in_out == "OUTPUT"
                 ]
             }
 
