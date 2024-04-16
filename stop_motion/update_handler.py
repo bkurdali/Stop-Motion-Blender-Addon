@@ -42,7 +42,7 @@ def stop_motion_data(scene):
 
 def handler_loop(func):
     def wrapper():
-        for handler in bpy.app.handlers.frame_change_post:
+        for handler in bpy.app.handlers.frame_change_pre:
              if stop_motion_data.__name__ == handler.__name__:
                  return func(handler)
     return wrapper
@@ -57,9 +57,9 @@ def is_running(handler):
 @handler_loop
 def remove(handler):
     """Remove updater"""
-    bpy.app.handlers.frame_change_post.remove(handler)
+    bpy.app.handlers.frame_change_pre.remove(handler)
 
 
 def add():
     if not is_running():
-        bpy.app.handlers.frame_change_post.append(stop_motion_data)
+        bpy.app.handlers.frame_change_pre.append(stop_motion_data)
