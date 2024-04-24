@@ -38,11 +38,10 @@ import bpy
 bl_info = {
     "name": "Stop Motion",
     "author": "Bassam Kurdali",
-    "version": (0, 9, 8),
+    "version": (0, 9, 9),
     "blender": (4, 0, 0),
     "location": "View3D > Sidebar",
     "description": "Turns Blender into a Virtual Stop Motion Studio",
-    "warning": "Beta, Expect bugs and changes",
     "doc_url": "https://wiki.urchn.org/wiki/Stopmotion",
     "tracker_url": "https://github.com/bkurdali/Stop-Motion-Blender-Addon",
     "category": "Animation",
