@@ -277,9 +277,9 @@ class VIEW3D_MT_PIE_StopMotion_Mode(bpy.types.Menu):
         if modifier:
             pie.operator_enum("object.stop_motion_mode", "mode")
         else:
-            print("typical ")
             menu = pie.operator_enum("object.mode_set", "mode")
-            menu.toggle = False
+            if menu:
+                menu.toggle = False #TODO might need operator_menu_enum or skip
 
 
 def add_object_button(self, context):
