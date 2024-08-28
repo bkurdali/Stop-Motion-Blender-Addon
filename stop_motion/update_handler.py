@@ -28,13 +28,13 @@ from .modifier_data import Modifier
 
 def stop_motion_data(scene):
     """Update object data as quickly as possible in non object modes"""
+    if bpy.context.mode == 'OBJECT':
+        return #As early as possible
     stop_motion_object = bpy.context.object
     modifier = Modifier(stop_motion_object)
     if not modifier.modifier:
         return
     mode = stop_motion_object.mode
-    if mode == 'OBJECT':
-        return
     bpy.ops.object.mode_set(mode='OBJECT')
     stop_motion_object.data = modifier.get_object().data
     bpy.ops.object.mode_set(mode=mode)

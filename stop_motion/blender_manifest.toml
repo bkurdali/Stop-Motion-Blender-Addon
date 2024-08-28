@@ -1,0 +1,23 @@
+schema_version = "1.0.0"
+
+id = "stop_motion"
+version = "1.0.0"
+name = "Stop Motion"
+tagline = "Animate meshes like a stop motion animator"
+maintainer = "Ursula Kurdali <ursula@urchn.org>"
+type = "add-on"
+
+website = "https://github.com/bkurdali/Stop-Motion-Blender-Addon/tree/extension"
+
+tags = ["Animation"]
+
+blender_version_min = "4.2.0"
+
+license = [
+  "SPDX:GPL-3.0-or-later",
+]
+
+copyright = ["2024 Ursula Kurdali", "2024 Bassam Kurdali"]
+
+[permissions]
+files = "Useful for OBJ Import/Export Operators"
