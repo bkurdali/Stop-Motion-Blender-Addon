@@ -23,9 +23,9 @@ Central class to provide version tagging, perhaps some kind of do_versions
 down the road if I can be bothered
 """
 
-MAJOR = 0
-MINOR = 9
-SUB = 3
+MAJOR = 1
+MINOR = 0
+SUB = 1
 NAME = "STPMO"
 
 ONION = "onion"

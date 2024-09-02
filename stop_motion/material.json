@@ -1,1 +1,381 @@
-{"nodes": {"Transparent BSDF": {"color": [0.6079999804496765, 0.6079999804496765, 0.6079999804496765], "hide": false, "label": "", "location": [-111.0930404663086, 9.048161506652832], "mute": false, "name": "Transparent BSDF", "select": false, "show_options": true, "show_preview": false, "show_texture": false, "type": "BSDF_TRANSPARENT", "use_custom_color": false, "width": 140.0, "width_hidden": 42.0, "bl_idname": "ShaderNodeBsdfTransparent", "inputs": [{"description": "", "enabled": true, "link_limit": 1, "name": "Color", "node": "Transparent BSDF", "show_expanded": false, "type": "RGBA", "default_value": [1.0, 1.0, 1.0, 1.0]}], "outputs": [{"description": "", "enabled": true, "name": "BSDF"}]}, "Emission": {"color": [0.6079999804496765, 0.6079999804496765, 0.6079999804496765], "hide": false, "label": "", "location": [-116.31236267089844, -78.43525695800781], "mute": false, "name": "Emission", "select": false, "show_options": true, "show_preview": false, "show_texture": false, "type": "EMISSION", "use_custom_color": false, "width": 140.0, "width_hidden": 42.0, "bl_idname": "ShaderNodeEmission", "inputs": [{"description": "", "enabled": true, "link_limit": 1, "name": "Color", "node": "Emission", "show_expanded": false, "type": "RGBA", "default_value": [1.0, 0.0, 0.0, 0.20000000298023224]}, {"description": "", "enabled": true, "link_limit": 1, "name": "Strength", "node": "Emission", "show_expanded": false, "type": "VALUE", "default_value": 1.0}], "outputs": [{"description": "", "enabled": true, "name": "Emission"}]}, "Group Output": {"color": [0.6079999804496765, 0.6079999804496765, 0.6079999804496765], "hide": false, "interface": "", "label": "", "location": [306.3123779296875, 0.0], "mute": false, "name": "Group Output", "select": false, "show_options": true, "show_preview": false, "show_texture": false, "type": "GROUP_OUTPUT", "use_custom_color": false, "width": 140.0, "width_hidden": 42.0, "bl_idname": "NodeGroupOutput", "inputs": [{"description": "", "enabled": true, "link_limit": 1, "name": "Shader", "node": "Group Output", "show_expanded": false, "type": "SHADER"}, {"description": "", "enabled": true, "link_limit": 1, "name": "", "node": "Group Output", "show_expanded": false, "type": "CUSTOM"}], "outputs": []}, "Mix Shader": {"color": [0.6079999804496765, 0.6079999804496765, 0.6079999804496765], "hide": false, "label": "", "location": [116.31236267089844, 78.43525695800781], "mute": false, "name": "Mix Shader", "select": false, "show_options": true, "show_preview": false, "show_texture": false, "type": "MIX_SHADER", "use_custom_color": false, "width": 140.0, "width_hidden": 42.0, "bl_idname": "ShaderNodeMixShader", "inputs": [{"description": "", "enabled": true, "link_limit": 1, "name": "Fac", "node": "Mix Shader", "show_expanded": false, "type": "VALUE", "default_value": 0.20000000298023224}, {"description": "", "enabled": true, "link_limit": 1, "name": "Shader", "node": "Mix Shader", "show_expanded": true, "type": "SHADER"}, {"description": "", "enabled": true, "link_limit": 1, "name": "Shader", "node": "Mix Shader", "show_expanded": true, "type": "SHADER"}], "outputs": [{"description": "", "enabled": true, "name": "Shader"}]}, "Group Input": {"color": [0.6079999804496765, 0.6079999804496765, 0.6079999804496765], "hide": false, "interface": "", "label": "", "location": [-316.3123779296875, 0.0], "mute": false, "name": "Group Input", "select": true, "show_options": true, "show_preview": false, "show_texture": false, "type": "GROUP_INPUT", "use_custom_color": false, "width": 140.0, "width_hidden": 42.0, "bl_idname": "NodeGroupInput", "inputs": [], "outputs": [{"description": "", "enabled": true, "name": "Color"}, {"description": "", "enabled": true, "name": "Opacity"}, {"description": "", "enabled": true, "name": ""}]}}, "links": [{"from_node": "Mix Shader", "from_socket": 0, "to_node": "Group Output", "to_socket": 0}, {"from_node": "Emission", "from_socket": 0, "to_node": "Mix Shader", "to_socket": 2}, {"from_node": "Transparent BSDF", "from_socket": 0, "to_node": "Mix Shader", "to_socket": 1}, {"from_node": "Group Input", "from_socket": 0, "to_node": "Emission", "to_socket": 0}, {"from_node": "Group Input", "from_socket": 1, "to_node": "Mix Shader", "to_socket": 0}], "inputs": [{"attribute_domain": "POINT", "default_value": [1.0, 0.0, 0.0, 0.20000000298023224], "description": "", "hide_value": false, "identifier": "Input_1", "name": "Color", "type": "RGBA", "bl_socket_idname": "NodeSocketColor"}, {"attribute_domain": "POINT", "default_value": 0.20000000298023224, "description": "", "hide_value": false, "identifier": "Input_2", "max_value": 1.0, "min_value": 0.0, "name": "Opacity", "type": "VALUE", "bl_socket_idname": "NodeSocketFloat"}], "outputs": [{"attribute_domain": "POINT", "description": "", "hide_value": false, "identifier": "Output_0", "name": "Shader", "type": "SHADER", "bl_socket_idname": "NodeSocketShader"}]}
+{
+    "inputs": [
+        {
+            "attribute_domain": "POINT",
+            "bl_socket_idname": "NodeSocketColor",
+            "default_attribute_name": "",
+            "default_input": "VALUE",
+            "default_value": [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+            ],
+            "description": "",
+            "force_non_field": false,
+            "hide_in_modifier": false,
+            "hide_value": false,
+            "identifier": "Input_1",
+            "in_out": "INPUT",
+            "index": 1,
+            "item_type": "SOCKET",
+            "layer_selection_field": false,
+            "name": "Color",
+            "parent": "",
+            "position": 1,
+            "socket_type": "NodeSocketColor"
+        },
+        {
+            "attribute_domain": "POINT",
+            "bl_socket_idname": "NodeSocketFloat",
+            "default_attribute_name": "",
+            "default_input": "VALUE",
+            "default_value": 0.0,
+            "description": "",
+            "force_non_field": false,
+            "hide_in_modifier": false,
+            "hide_value": false,
+            "identifier": "Input_2",
+            "in_out": "INPUT",
+            "index": 2,
+            "item_type": "SOCKET",
+            "layer_selection_field": false,
+            "max_value": 3.4028234663852886e+38,
+            "min_value": -3.4028234663852886e+38,
+            "name": "Opacity",
+            "parent": "",
+            "position": 2,
+            "socket_type": "NodeSocketFloat",
+            "subtype": "NONE"
+        }
+    ],
+    "links": [
+        {
+            "from_node": "Mix Shader",
+            "from_socket": 0,
+            "multi_input_sort_id": 0,
+            "to_node": "Group Output",
+            "to_socket": 0
+        },
+        {
+            "from_node": "Emission",
+            "from_socket": 0,
+            "multi_input_sort_id": 0,
+            "to_node": "Mix Shader",
+            "to_socket": 2
+        },
+        {
+            "from_node": "Transparent BSDF",
+            "from_socket": 0,
+            "multi_input_sort_id": 0,
+            "to_node": "Mix Shader",
+            "to_socket": 1
+        },
+        {
+            "from_node": "Group Input",
+            "from_socket": 0,
+            "multi_input_sort_id": 0,
+            "to_node": "Emission",
+            "to_socket": 0
+        },
+        {
+            "from_node": "Group Input",
+            "from_socket": 1,
+            "multi_input_sort_id": 0,
+            "to_node": "Mix Shader",
+            "to_socket": 0
+        }
+    ],
+    "nodes": {
+        "Emission": {
+            "bl_idname": "ShaderNodeEmission",
+            "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+            ],
+            "hide": false,
+            "inputs": [
+                {
+                    "default_value": [
+                        1.0,
+                        0.0,
+                        0.0,
+                        0.20000000298023224
+                    ],
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Color",
+                    "node": "Emission",
+                    "show_expanded": false,
+                    "type": "RGBA"
+                },
+                {
+                    "default_value": 1.0,
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Strength",
+                    "node": "Emission",
+                    "show_expanded": false,
+                    "type": "VALUE"
+                },
+                {
+                    "default_value": 0.0,
+                    "description": "",
+                    "enabled": false,
+                    "link_limit": 1,
+                    "name": "Weight",
+                    "node": "Emission",
+                    "show_expanded": false,
+                    "type": "VALUE"
+                }
+            ],
+            "label": "",
+            "location": [
+                -116.31236267089844,
+                -78.43525695800781
+            ],
+            "mute": false,
+            "name": "Emission",
+            "outputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Emission"
+                }
+            ],
+            "select": false,
+            "show_options": true,
+            "show_preview": false,
+            "show_texture": false,
+            "type": "EMISSION",
+            "use_custom_color": false,
+            "width": 140.0
+        },
+        "Group Input": {
+            "bl_idname": "NodeGroupInput",
+            "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+            ],
+            "hide": false,
+            "inputs": [],
+            "label": "",
+            "location": [
+                -316.3123779296875,
+                0.0
+            ],
+            "mute": false,
+            "name": "Group Input",
+            "outputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Color"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Opacity"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": ""
+                }
+            ],
+            "select": true,
+            "show_options": true,
+            "show_preview": false,
+            "show_texture": false,
+            "type": "GROUP_INPUT",
+            "use_custom_color": false,
+            "width": 140.0
+        },
+        "Group Output": {
+            "bl_idname": "NodeGroupOutput",
+            "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+            ],
+            "hide": false,
+            "inputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Shader",
+                    "node": "Group Output",
+                    "show_expanded": false,
+                    "type": "SHADER"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "",
+                    "node": "Group Output",
+                    "show_expanded": false,
+                    "type": "CUSTOM"
+                }
+            ],
+            "label": "",
+            "location": [
+                306.3123779296875,
+                0.0
+            ],
+            "mute": false,
+            "name": "Group Output",
+            "outputs": [],
+            "select": false,
+            "show_options": true,
+            "show_preview": false,
+            "show_texture": false,
+            "type": "GROUP_OUTPUT",
+            "use_custom_color": false,
+            "width": 140.0
+        },
+        "Mix Shader": {
+            "bl_idname": "ShaderNodeMixShader",
+            "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+            ],
+            "hide": false,
+            "inputs": [
+                {
+                    "default_value": 0.20000000298023224,
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Fac",
+                    "node": "Mix Shader",
+                    "show_expanded": false,
+                    "type": "VALUE"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Shader",
+                    "node": "Mix Shader",
+                    "show_expanded": true,
+                    "type": "SHADER"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Shader",
+                    "node": "Mix Shader",
+                    "show_expanded": true,
+                    "type": "SHADER"
+                }
+            ],
+            "label": "",
+            "location": [
+                116.31236267089844,
+                78.43525695800781
+            ],
+            "mute": false,
+            "name": "Mix Shader",
+            "outputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Shader"
+                }
+            ],
+            "select": false,
+            "show_options": true,
+            "show_preview": false,
+            "show_texture": false,
+            "type": "MIX_SHADER",
+            "use_custom_color": false,
+            "width": 140.0
+        },
+        "Transparent BSDF": {
+            "bl_idname": "ShaderNodeBsdfTransparent",
+            "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+            ],
+            "hide": false,
+            "inputs": [
+                {
+                    "default_value": [
+                        1.0,
+                        1.0,
+                        1.0,
+                        1.0
+                    ],
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Color",
+                    "node": "Transparent BSDF",
+                    "show_expanded": false,
+                    "type": "RGBA"
+                },
+                {
+                    "default_value": 0.0,
+                    "description": "",
+                    "enabled": false,
+                    "link_limit": 1,
+                    "name": "Weight",
+                    "node": "Transparent BSDF",
+                    "show_expanded": false,
+                    "type": "VALUE"
+                }
+            ],
+            "label": "",
+            "location": [
+                -111.0930404663086,
+                9.048161506652832
+            ],
+            "mute": false,
+            "name": "Transparent BSDF",
+            "outputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "BSDF"
+                }
+            ],
+            "select": false,
+            "show_options": true,
+            "show_preview": false,
+            "show_texture": false,
+            "type": "BSDF_TRANSPARENT",
+            "use_custom_color": false,
+            "width": 140.0
+        }
+    },
+    "outputs": [
+        {
+            "attribute_domain": "POINT",
+            "bl_socket_idname": "NodeSocketShader",
+            "default_attribute_name": "",
+            "default_input": "VALUE",
+            "description": "",
+            "force_non_field": false,
+            "hide_in_modifier": false,
+            "hide_value": false,
+            "identifier": "Output_0",
+            "in_out": "OUTPUT",
+            "index": 0,
+            "item_type": "SOCKET",
+            "layer_selection_field": false,
+            "name": "Shader",
+            "parent": "",
+            "position": 0,
+            "socket_type": "NodeSocketShader"
+        }
+    ]
+}

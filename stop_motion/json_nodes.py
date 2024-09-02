@@ -24,7 +24,6 @@ import os
 # TODO Save Metadata (type information, read only)
 # TODO Allow Saving multiple items in a single file
 # TODO Include Item type (e.g. GeometryNodeTree) in save so we can make code generic
-# TODO If None in a value, don't save (no point in setting it and we don't know type)
 # TODO Recursive
 
 # Fallback Functions
@@ -155,7 +154,8 @@ class Node_Tree():
             try:
                 setattr(element, prop, data)
             except Exception as e:
-                print(f"Warning: {e}: ", prop)        
+                if False: # TODO Use debugging option in the future
+                    print(f"Warning: {e}: ", prop)
 
     def create(self, tree_type="GeometryNodeTree"):
         """ Create a New Node Tree """
@@ -215,7 +215,7 @@ def write_node(group_name, path):
     """ Write Serialized Node Group to JSON format file """
     group_data = Node_Tree(group_name).tree_data
     with open(path, 'w') as json_file:
-        json_file.write(json.dumps(group_data))
+        json_file.write(json.dumps(group_data, indent = 4, sort_keys=True))
         
         
 def read_node(group_name, path, tree_type="GeometryNodeTree"):

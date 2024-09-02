@@ -1,1 +1,213 @@
-{"nodes": {"Group Input": {"color": [0.6079999804496765, 0.6079999804496765, 0.6079999804496765], "hide": false, "interface": "", "label": "", "location": [-340.0, 0.0], "mute": false, "name": "Group Input", "select": false, "show_options": true, "show_preview": false, "show_texture": false, "type": "GROUP_INPUT", "use_custom_color": false, "width": 140.0, "width_hidden": 80.0, "bl_idname": "NodeGroupInput", "inputs": [], "outputs": [{"description": "", "enabled": true, "name": "Geometry"}, {"description": "", "enabled": true, "name": ""}]}, "Group Output": {"color": [0.6079999804496765, 0.6079999804496765, 0.6079999804496765], "hide": false, "interface": "", "label": "", "location": [200.0, 0.0], "mute": false, "name": "Group Output", "select": false, "show_options": true, "show_preview": false, "show_texture": false, "type": "GROUP_OUTPUT", "use_custom_color": false, "width": 140.0, "width_hidden": 80.0, "bl_idname": "NodeGroupOutput", "inputs": [{"description": "", "enabled": true, "link_limit": 1, "name": "Geometry", "node": "Group Output", "show_expanded": false, "type": "GEOMETRY"}, {"description": "", "enabled": true, "link_limit": 1, "name": "", "node": "Group Output", "show_expanded": false, "type": "CUSTOM"}], "outputs": []}, "Realize Instances": {"color": [0.6079999804496765, 0.6079999804496765, 0.6079999804496765], "hide": false, "label": "", "legacy_behavior": false, "location": [-73.35455322265625, 2.44622802734375], "mute": false, "name": "Realize Instances", "select": true, "show_options": true, "show_preview": false, "show_texture": false, "type": "REALIZE_INSTANCES", "use_custom_color": false, "width": 140.0, "width_hidden": 100.0, "bl_idname": "GeometryNodeRealizeInstances", "inputs": [{"description": "", "enabled": true, "link_limit": 1, "name": "Geometry", "node": "Realize Instances", "show_expanded": false, "type": "GEOMETRY"}], "outputs": [{"description": "", "enabled": true, "name": "Geometry"}]}}, "links": [{"from_node": "Group Input", "from_socket": 0, "to_node": "Realize Instances", "to_socket": 0}, {"from_node": "Realize Instances", "from_socket": 0, "to_node": "Group Output", "to_socket": 0}], "inputs": [{"attribute_domain": "POINT", "description": "", "hide_value": false, "identifier": "Input_0", "name": "Geometry", "type": "GEOMETRY", "bl_socket_idname": "NodeSocketGeometry"}], "outputs": [{"attribute_domain": "POINT", "description": "", "hide_value": false, "identifier": "Output_1", "name": "Geometry", "type": "GEOMETRY", "bl_socket_idname": "NodeSocketGeometry"}]}
+{
+    "inputs": [
+        {
+            "attribute_domain": "POINT",
+            "bl_socket_idname": "NodeSocketGeometry",
+            "default_attribute_name": "",
+            "default_input": "VALUE",
+            "description": "",
+            "force_non_field": false,
+            "hide_in_modifier": false,
+            "hide_value": false,
+            "identifier": "Input_0",
+            "in_out": "INPUT",
+            "index": 1,
+            "item_type": "SOCKET",
+            "layer_selection_field": false,
+            "name": "Geometry",
+            "parent": "",
+            "position": 1,
+            "socket_type": "NodeSocketGeometry"
+        }
+    ],
+    "links": [
+        {
+            "from_node": "Group Input",
+            "from_socket": 0,
+            "multi_input_sort_id": 0,
+            "to_node": "Realize Instances",
+            "to_socket": 0
+        },
+        {
+            "from_node": "Realize Instances",
+            "from_socket": 0,
+            "multi_input_sort_id": 0,
+            "to_node": "Group Output",
+            "to_socket": 0
+        }
+    ],
+    "nodes": {
+        "Group Input": {
+            "bl_idname": "NodeGroupInput",
+            "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+            ],
+            "hide": false,
+            "inputs": [],
+            "label": "",
+            "location": [
+                -260.0000305175781,
+                0.0
+            ],
+            "mute": false,
+            "name": "Group Input",
+            "outputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Geometry"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": ""
+                }
+            ],
+            "select": false,
+            "show_options": true,
+            "show_preview": false,
+            "show_texture": false,
+            "type": "GROUP_INPUT",
+            "use_custom_color": false,
+            "width": 140.0
+        },
+        "Group Output": {
+            "bl_idname": "NodeGroupOutput",
+            "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+            ],
+            "hide": false,
+            "inputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Geometry",
+                    "node": "Group Output",
+                    "show_expanded": false,
+                    "type": "GEOMETRY"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "",
+                    "node": "Group Output",
+                    "show_expanded": false,
+                    "type": "CUSTOM"
+                }
+            ],
+            "label": "",
+            "location": [
+                100.0,
+                0.0
+            ],
+            "mute": false,
+            "name": "Group Output",
+            "outputs": [],
+            "select": true,
+            "show_options": true,
+            "show_preview": false,
+            "show_texture": false,
+            "type": "GROUP_OUTPUT",
+            "use_custom_color": false,
+            "width": 140.0
+        },
+        "Realize Instances": {
+            "bl_idname": "GeometryNodeRealizeInstances",
+            "color": [
+                0.6079999804496765,
+                0.6079999804496765,
+                0.6079999804496765
+            ],
+            "hide": false,
+            "inputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Geometry",
+                    "node": "Realize Instances",
+                    "show_expanded": false,
+                    "type": "GEOMETRY"
+                },
+                {
+                    "default_value": true,
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Selection",
+                    "node": "Realize Instances",
+                    "show_expanded": false,
+                    "type": "BOOLEAN"
+                },
+                {
+                    "default_value": true,
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Realize All",
+                    "node": "Realize Instances",
+                    "show_expanded": false,
+                    "type": "BOOLEAN"
+                },
+                {
+                    "default_value": 0,
+                    "description": "",
+                    "enabled": true,
+                    "link_limit": 1,
+                    "name": "Depth",
+                    "node": "Realize Instances",
+                    "show_expanded": false,
+                    "type": "INT"
+                }
+            ],
+            "label": "",
+            "location": [
+                -80.0,
+                0.0
+            ],
+            "mute": false,
+            "name": "Realize Instances",
+            "outputs": [
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Geometry"
+                }
+            ],
+            "select": false,
+            "show_options": true,
+            "show_preview": false,
+            "show_texture": false,
+            "type": "REALIZE_INSTANCES",
+            "use_custom_color": false,
+            "width": 140.0
+        }
+    },
+    "outputs": [
+        {
+            "attribute_domain": "POINT",
+            "bl_socket_idname": "NodeSocketGeometry",
+            "default_attribute_name": "",
+            "default_input": "VALUE",
+            "description": "",
+            "force_non_field": false,
+            "hide_in_modifier": false,
+            "hide_value": false,
+            "identifier": "Output_1",
+            "in_out": "OUTPUT",
+            "index": 0,
+            "item_type": "SOCKET",
+            "layer_selection_field": false,
+            "name": "Geometry",
+            "parent": "",
+            "position": 0,
+            "socket_type": "NodeSocketGeometry"
+        }
+    ]
+}

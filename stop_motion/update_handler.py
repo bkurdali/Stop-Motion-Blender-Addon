@@ -41,6 +41,7 @@ def stop_motion_data(scene):
 
 
 def handler_loop(func):
+    """ Convenience wrapper for updater management functions """
     def wrapper():
         for handler in bpy.app.handlers.frame_change_pre:
              if stop_motion_data.__name__ == handler.__name__:
@@ -61,5 +62,6 @@ def remove(handler):
 
 
 def add():
+    """ Add updater if it isn't running """
     if not is_running():
         bpy.app.handlers.frame_change_pre.append(stop_motion_data)
