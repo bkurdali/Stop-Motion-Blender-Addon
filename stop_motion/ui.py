@@ -187,11 +187,12 @@ class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
 
         running = update_handler.is_running()
         icon = 'PLAY' if not running else 'SNAP_FACE'
+        col.alert = bpy.ops.object.stop_motion_updater_toggle.poll()
         self.operator_button(
             col,
             "object.stop_motion_updater_toggle", "Toggle Updater", icon, {})
         col.separator(factor=0.4)
-
+        col.alert = False
         self.pop_over(
             col,
             "OBJECT_PT_stopmotion_onion_skin", "Onion Skins", 'GP_MULTIFRAME_EDITING')

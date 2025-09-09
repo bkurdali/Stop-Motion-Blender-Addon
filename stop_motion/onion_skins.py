@@ -87,7 +87,7 @@ class OnionMaterial():
     """Wrapper for Onion Skin Material"""
 
     props = {
-        "use_nodes": True, "blend_method": 'BLEND', "shadow_method": 'NONE',
+        "use_nodes": True, "blend_method": 'BLEND',
         "use_backface_culling": True, "roughness": 1, "use_fake_user": True
         }
 
