@@ -80,8 +80,13 @@ class Modifier():
 
     def get_fcurve(self):
         action = self.modifier.id_data.animation_data.action
+        try:
+            channelbag = action.layers[0].strips[0].channelbags[0]  #TODO not robust must work for layered actions
+        except IndexError:
+            return
+        
         fcurves = (
-            f for f in action.fcurves
+            f for f in channelbag.fcurves
             if f.data_path == f'modifiers["{self.modifier.name}"]["{self.__index__}"]' and f.array_index == 0
             )
         for fcurve in fcurves:
