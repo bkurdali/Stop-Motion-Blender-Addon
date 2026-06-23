@@ -20,10 +20,14 @@
             "index": 1,
             "item_type": "SOCKET",
             "layer_selection_field": false,
+            "menu_expanded": false,
             "name": "Color",
+            "optional_label": false,
             "parent": "",
             "position": 1,
-            "socket_type": "NodeSocketColor"
+            "select": false,
+            "socket_type": "NodeSocketColor",
+            "structure_type": "AUTO"
         },
         {
             "attribute_domain": "POINT",
@@ -41,11 +45,15 @@
             "item_type": "SOCKET",
             "layer_selection_field": false,
             "max_value": 3.4028234663852886e+38,
+            "menu_expanded": false,
             "min_value": -3.4028234663852886e+38,
             "name": "Opacity",
+            "optional_label": false,
             "parent": "",
             "position": 2,
+            "select": false,
             "socket_type": "NodeSocketFloat",
+            "structure_type": "AUTO",
             "subtype": "NONE"
         }
     ],
@@ -94,6 +102,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "SHADER",
             "hide": false,
             "inputs": [
                 {
@@ -137,6 +146,10 @@
                 -116.31236267089844,
                 -78.43525695800781
             ],
+            "location_absolute": [
+                -116.31236267089844,
+                -78.43525695800781
+            ],
             "mute": false,
             "name": "Emission",
             "outputs": [
@@ -146,12 +159,14 @@
                     "name": "Emission"
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "EMISSION",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Group Input": {
@@ -161,10 +176,15 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INTERFACE",
             "hide": false,
             "inputs": [],
             "label": "",
             "location": [
+                -316.3123779296875,
+                0.0
+            ],
+            "location_absolute": [
                 -316.3123779296875,
                 0.0
             ],
@@ -187,12 +207,14 @@
                     "name": ""
                 }
             ],
+            "panel_states": [],
             "select": true,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "GROUP_INPUT",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Group Output": {
@@ -202,6 +224,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INTERFACE",
             "hide": false,
             "inputs": [
                 {
@@ -216,7 +239,7 @@
                 {
                     "description": "",
                     "enabled": true,
-                    "link_limit": 1,
+                    "link_limit": 4095,
                     "name": "",
                     "node": "Group Output",
                     "show_expanded": false,
@@ -228,15 +251,21 @@
                 306.3123779296875,
                 0.0
             ],
+            "location_absolute": [
+                306.3123779296875,
+                0.0
+            ],
             "mute": false,
             "name": "Group Output",
             "outputs": [],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "GROUP_OUTPUT",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Mix Shader": {
@@ -246,6 +275,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "SHADER",
             "hide": false,
             "inputs": [
                 {
@@ -253,7 +283,7 @@
                     "description": "",
                     "enabled": true,
                     "link_limit": 1,
-                    "name": "Fac",
+                    "name": "Factor",
                     "node": "Mix Shader",
                     "show_expanded": false,
                     "type": "VALUE"
@@ -282,6 +312,10 @@
                 116.31236267089844,
                 78.43525695800781
             ],
+            "location_absolute": [
+                116.31236267089844,
+                78.43525695800781
+            ],
             "mute": false,
             "name": "Mix Shader",
             "outputs": [
@@ -291,12 +325,14 @@
                     "name": "Shader"
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "MIX_SHADER",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Transparent BSDF": {
@@ -306,6 +342,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "SHADER",
             "hide": false,
             "inputs": [
                 {
@@ -339,6 +376,10 @@
                 -111.0930404663086,
                 9.048161506652832
             ],
+            "location_absolute": [
+                -111.0930404663086,
+                9.048161506652832
+            ],
             "mute": false,
             "name": "Transparent BSDF",
             "outputs": [
@@ -348,12 +389,14 @@
                     "name": "BSDF"
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "BSDF_TRANSPARENT",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         }
     },
@@ -372,10 +415,14 @@
             "index": 0,
             "item_type": "SOCKET",
             "layer_selection_field": false,
+            "menu_expanded": false,
             "name": "Shader",
+            "optional_label": false,
             "parent": "",
             "position": 0,
-            "socket_type": "NodeSocketShader"
+            "select": false,
+            "socket_type": "NodeSocketShader",
+            "structure_type": "AUTO"
         }
     ]
 }

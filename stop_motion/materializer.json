@@ -14,10 +14,14 @@
             "index": 1,
             "item_type": "SOCKET",
             "layer_selection_field": false,
+            "menu_expanded": false,
             "name": "Geometry",
+            "optional_label": false,
             "parent": "",
             "position": 1,
-            "socket_type": "NodeSocketGeometry"
+            "select": false,
+            "socket_type": "NodeSocketGeometry",
+            "structure_type": "AUTO"
         },
         {
             "attribute_domain": "POINT",
@@ -33,10 +37,14 @@
             "index": 2,
             "item_type": "SOCKET",
             "layer_selection_field": false,
+            "menu_expanded": false,
             "name": "Material",
+            "optional_label": false,
             "parent": "",
             "position": 2,
-            "socket_type": "NodeSocketMaterial"
+            "select": false,
+            "socket_type": "NodeSocketMaterial",
+            "structure_type": "AUTO"
         }
     ],
     "links": [
@@ -70,10 +78,15 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INTERFACE",
             "hide": false,
             "inputs": [],
             "label": "",
             "location": [
+                -240.00001525878906,
+                20.0
+            ],
+            "location_absolute": [
                 -240.00001525878906,
                 20.0
             ],
@@ -96,12 +109,14 @@
                     "name": ""
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "GROUP_INPUT",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Group Output": {
@@ -111,6 +126,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INTERFACE",
             "hide": false,
             "inputs": [
                 {
@@ -125,7 +141,7 @@
                 {
                     "description": "",
                     "enabled": true,
-                    "link_limit": 1,
+                    "link_limit": 4095,
                     "name": "",
                     "node": "Group Output",
                     "show_expanded": false,
@@ -137,15 +153,21 @@
                 80.0,
                 20.0
             ],
+            "location_absolute": [
+                80.0,
+                20.0
+            ],
             "mute": false,
             "name": "Group Output",
             "outputs": [],
+            "panel_states": [],
             "select": true,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "GROUP_OUTPUT",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Set Material": {
@@ -155,6 +177,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "GEOMETRY",
             "hide": false,
             "inputs": [
                 {
@@ -192,6 +215,10 @@
                 -80.0,
                 20.0
             ],
+            "location_absolute": [
+                -80.0,
+                20.0
+            ],
             "mute": false,
             "name": "Set Material",
             "outputs": [
@@ -201,12 +228,14 @@
                     "name": "Geometry"
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "SET_MATERIAL",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         }
     },
@@ -225,10 +254,14 @@
             "index": 0,
             "item_type": "SOCKET",
             "layer_selection_field": false,
+            "menu_expanded": false,
             "name": "Geometry",
+            "optional_label": false,
             "parent": "",
             "position": 0,
-            "socket_type": "NodeSocketGeometry"
+            "select": false,
+            "socket_type": "NodeSocketGeometry",
+            "structure_type": "AUTO"
         }
     ]
 }

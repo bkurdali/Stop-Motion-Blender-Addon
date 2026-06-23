@@ -60,23 +60,27 @@ class Modifier():
 
     @property
     def index(self):
-       return self.modifier[self.__index__]
+       # return self.modifier[self.__index__]
+       return getattr(self.modifier.properties.inputs, self.__index__).value
 
     @index.setter
     def index(self, value):
-        self.modifier[self.__index__] = value
+        # self.modifier[self.__index__] = value
+        getattr(self.modifier.properties.inputs, self.__index__).value = value
 
     @property
     def collection(self):
         if not self.modifier:
             return None
-        return self.modifier[self.__collection__]
+        # return self.modifier[self.__collection__]
+        return getattr(self.modifier.properties.inputs, self.__collection__).value
 
     @collection.setter
     def collection(self, value):
         if not self.modifier:
             return
-        self.modifier[self.__collection__] = value
+        getattr(self.modifier.properties.inputs, self.__collection__).value = value
+        # self.modifier[self.__collection__] = value
 
     def get_fcurve(self):
         action = self.modifier.id_data.animation_data.action
@@ -87,7 +91,7 @@ class Modifier():
         
         fcurves = (
             f for f in channelbag.fcurves
-            if f.data_path == f'modifiers["{self.modifier.name}"]["{self.__index__}"]' and f.array_index == 0
+            if f.data_path == f'modifiers["{self.modifier.name}"].properties.inputs.{self.__index__}.value' and f.array_index == 0
             )
         for fcurve in fcurves:
             return fcurve
@@ -95,7 +99,8 @@ class Modifier():
     def keyframe_index(self, context):
         """ Insert a Keyframe at the current frame on the index prop """
 
-        self.modifier.keyframe_insert(f'["{self.__index__}"]')
+        # self.modifier.keyframe_insert(f'["{self.__index__}"]')
+        self.obj.keyframe_insert(data_path=f'modifiers["{self.modifier.name}"].properties.inputs.{self.__index__}.value')
 
         # Now make sure it is constant
         fcurve = self.get_fcurve()

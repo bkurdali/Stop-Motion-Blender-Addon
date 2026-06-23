@@ -14,10 +14,14 @@
             "index": 1,
             "item_type": "SOCKET",
             "layer_selection_field": false,
+            "menu_expanded": false,
             "name": "Geometry",
+            "optional_label": false,
             "parent": "",
             "position": 1,
-            "socket_type": "NodeSocketGeometry"
+            "select": false,
+            "socket_type": "NodeSocketGeometry",
+            "structure_type": "AUTO"
         },
         {
             "attribute_domain": "POINT",
@@ -33,10 +37,14 @@
             "index": 2,
             "item_type": "SOCKET",
             "layer_selection_field": false,
+            "menu_expanded": false,
             "name": "Collection",
+            "optional_label": false,
             "parent": "",
             "position": 2,
-            "socket_type": "NodeSocketCollection"
+            "select": false,
+            "socket_type": "NodeSocketCollection",
+            "structure_type": "AUTO"
         },
         {
             "attribute_domain": "POINT",
@@ -54,11 +62,15 @@
             "item_type": "SOCKET",
             "layer_selection_field": false,
             "max_value": 2147483647,
+            "menu_expanded": false,
             "min_value": -2147483648,
             "name": "Instance Index",
+            "optional_label": false,
             "parent": "",
             "position": 3,
+            "select": false,
             "socket_type": "NodeSocketInt",
+            "structure_type": "AUTO",
             "subtype": "NONE"
         }
     ],
@@ -82,14 +94,14 @@
             "from_socket": 0,
             "multi_input_sort_id": 0,
             "to_node": "Compare",
-            "to_socket": 2
+            "to_socket": 0
         },
         {
             "from_node": "Group Input Index",
             "from_socket": 2,
             "multi_input_sort_id": 0,
             "to_node": "Compare",
-            "to_socket": 3
+            "to_socket": 1
         },
         {
             "from_node": "Separate Geometry",
@@ -114,6 +126,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INPUT",
             "hide": false,
             "inputs": [
                 {
@@ -152,6 +165,10 @@
                 160.0,
                 -60.000003814697266
             ],
+            "location_absolute": [
+                160.0,
+                -60.000003814697266
+            ],
             "mute": false,
             "name": "Collection Info",
             "outputs": [
@@ -161,6 +178,7 @@
                     "name": "Instances"
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
@@ -168,6 +186,7 @@
             "transform_space": "ORIGINAL",
             "type": "COLLECTION_INFO",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Compare": {
@@ -177,30 +196,11 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "CONVERTER",
             "data_type": "INT",
             "hide": false,
             "inputs": [
                 {
-                    "default_value": 0.0,
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "A",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "VALUE"
-                },
-                {
-                    "default_value": 0.0,
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "B",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "VALUE"
-                },
-                {
                     "default_value": 0,
                     "description": "",
                     "enabled": true,
@@ -219,118 +219,14 @@
                     "node": "Compare",
                     "show_expanded": false,
                     "type": "INT"
-                },
-                {
-                    "default_value": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "A",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "VECTOR"
-                },
-                {
-                    "default_value": [
-                        0.0,
-                        0.0,
-                        0.0
-                    ],
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "B",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "VECTOR"
-                },
-                {
-                    "default_value": [
-                        0.800000011920929,
-                        0.800000011920929,
-                        0.800000011920929,
-                        1.0
-                    ],
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "A",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "RGBA"
-                },
-                {
-                    "default_value": [
-                        0.800000011920929,
-                        0.800000011920929,
-                        0.800000011920929,
-                        1.0
-                    ],
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "B",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "RGBA"
-                },
-                {
-                    "default_value": "",
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "A",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "STRING"
-                },
-                {
-                    "default_value": "",
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "B",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "STRING"
-                },
-                {
-                    "default_value": 0.8999999761581421,
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "C",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "VALUE"
-                },
-                {
-                    "default_value": 0.08726649731397629,
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "Angle",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "VALUE"
-                },
-                {
-                    "default_value": 0.0010000000474974513,
-                    "description": "",
-                    "enabled": false,
-                    "link_limit": 1,
-                    "name": "Epsilon",
-                    "node": "Compare",
-                    "show_expanded": false,
-                    "type": "VALUE"
                 }
             ],
             "label": "",
             "location": [
+                160.0,
+                -220.0
+            ],
+            "location_absolute": [
                 160.0,
                 -220.0
             ],
@@ -345,12 +241,14 @@
                     "name": "Result"
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "COMPARE",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Group Input Collection": {
@@ -360,10 +258,15 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INTERFACE",
             "hide": false,
             "inputs": [],
             "label": "",
             "location": [
+                -20.0,
+                -60.000003814697266
+            ],
+            "location_absolute": [
                 -20.0,
                 -60.000003814697266
             ],
@@ -391,12 +294,14 @@
                     "name": ""
                 }
             ],
-            "select": true,
+            "panel_states": [],
+            "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "GROUP_INPUT",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Group Input Index": {
@@ -406,10 +311,15 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INTERFACE",
             "hide": false,
             "inputs": [],
             "label": "",
             "location": [
+                -20.0,
+                -300.0
+            ],
+            "location_absolute": [
                 -20.0,
                 -300.0
             ],
@@ -437,12 +347,14 @@
                     "name": ""
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "GROUP_INPUT",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Group Output": {
@@ -452,6 +364,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INTERFACE",
             "hide": false,
             "inputs": [
                 {
@@ -466,7 +379,7 @@
                 {
                     "description": "",
                     "enabled": true,
-                    "link_limit": 1,
+                    "link_limit": 4095,
                     "name": "",
                     "node": "Group Output",
                     "show_expanded": false,
@@ -478,15 +391,21 @@
                 560.0000610351562,
                 -60.000003814697266
             ],
+            "location_absolute": [
+                560.0000610351562,
+                -60.000003814697266
+            ],
             "mute": false,
             "name": "Group Output",
             "outputs": [],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "GROUP_OUTPUT",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Index": {
@@ -496,10 +415,15 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "INPUT",
             "hide": false,
             "inputs": [],
             "label": "",
             "location": [
+                -20.0,
+                -220.0
+            ],
+            "location_absolute": [
                 -20.0,
                 -220.0
             ],
@@ -512,12 +436,14 @@
                     "name": "Index"
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "INDEX",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         },
         "Separate Geometry": {
@@ -527,6 +453,7 @@
                 0.6079999804496765,
                 0.6079999804496765
             ],
+            "color_tag": "GEOMETRY",
             "domain": "INSTANCE",
             "hide": false,
             "inputs": [
@@ -555,6 +482,10 @@
                 360.0,
                 -60.000003814697266
             ],
+            "location_absolute": [
+                360.0,
+                -60.000003814697266
+            ],
             "mute": false,
             "name": "Separate Geometry",
             "outputs": [
@@ -569,12 +500,14 @@
                     "name": "Inverted"
                 }
             ],
+            "panel_states": [],
             "select": false,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
             "type": "SEPARATE_GEOMETRY",
             "use_custom_color": false,
+            "warning_propagation": "ALL",
             "width": 140.0
         }
     },
@@ -593,10 +526,14 @@
             "index": 0,
             "item_type": "SOCKET",
             "layer_selection_field": false,
+            "menu_expanded": false,
             "name": "Geometry",
+            "optional_label": false,
             "parent": "",
             "position": 0,
-            "socket_type": "NodeSocketGeometry"
+            "select": false,
+            "socket_type": "NodeSocketGeometry",
+            "structure_type": "AUTO"
         }
     ]
 }
