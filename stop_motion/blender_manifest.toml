@@ -1,7 +1,7 @@
-schema_version = "1.0.4"
+schema_version = "1.0.5"
 
 id = "stop_motion"
-version = "1.0.3"
+version = "1.0.5"
 name = "Stop Motion"
 tagline = "Animate meshes like a stop motion animator"
 maintainer = "Ursula Kurdali <ursula@urchn.org>"

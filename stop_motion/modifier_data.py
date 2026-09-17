@@ -99,7 +99,6 @@ class Modifier():
     def keyframe_index(self, context):
         """ Insert a Keyframe at the current frame on the index prop """
 
-        # self.modifier.keyframe_insert(f'["{self.__index__}"]')
         self.obj.keyframe_insert(data_path=f'modifiers["{self.modifier.name}"].properties.inputs.{self.__index__}.value')
 
         # Now make sure it is constant
