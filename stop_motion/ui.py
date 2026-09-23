@@ -21,9 +21,11 @@ if "bpy" in locals():
     import importlib
     importlib.reload(update_handler)
     importlib.reload(modifier_data)
+    importlib.reload(multi)
 else:
     from . import update_handler
     from . import modifier_data
+    from . import multi
 
 import bpy
 from .modifier_data import Modifier
@@ -141,6 +143,15 @@ class StopMotionControls():
             {"use_copy": True}),
         ("screen.next_or_keyframe_stop_motion", "Next/New Keyframe", 'NEXT_KEYFRAME', {}),
         ("object.join_stop_motion", "Join Meshes", 'MOD_BOOLEAN', {}),
+        ("object.copy_stopmotion_animation", "Copy Animation as Stop Motion", 'PARTICLE_POINT',{}),
+
+    ]
+    multi_operators = [
+        ("object.stop_motion_material_multiples", "Assign Materials", 'MATERIAL_DATA',{}),
+        ("object.stop_motion_edit_multiples", "Edit Selected Frames", 'STICKY_UVS_DISABLE',{}),
+        #("object.stop_motion_sculpt_multiples", "Sculpt Selected Frames", 'OUTLINER_OB_FORCE_FIELD',{}),
+        ("object.stop_motion_exit_multiples", "Exit Multiple Editing", 'CANCEL_LARGE',{}),
+
     ]
     obj_operators = [
         ("object.export_stop_motion_obj", "Export to OBJ", 'CURRENT_FILE', {}),
@@ -162,6 +173,10 @@ class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
         layout = self.layout
 
         ob = context.object
+        scene = context.scene
+
+        if scene.multiple_stop_motion_settings.editing:
+            ob = bpy.data.objects[scene.multiple_stop_motion_settings.stopmo_object]
         mod = Modifier(ob)
 
         layout.use_property_split = True
@@ -180,7 +195,7 @@ class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
         menu.toggle = False
         col.separator(factor=0.8)
 
-        for operator_list in (self.main_operators, self.obj_operators):
+        for operator_list in (self.main_operators, self.multi_operators, self.obj_operators):
             for operator_id, text, icon, props in operator_list:
                 self.operator_button(col, operator_id, text, icon, props)
             col.separator(factor=0.4)

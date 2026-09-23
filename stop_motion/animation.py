@@ -138,7 +138,60 @@ class OBJECT_OT_keyframe_stop_motion(StopMotionOperator):
         for source in possible_sources:
             insert_keyframe(context, source.data, use_copy=self.use_copy)
             return {'FINISHED'} # We only care about 1 selected object
-        insert_keyframe(context, None, use_copy=True)
+        insert_keyframe(context, None, use_copy=True) # if no sources
+        return {'FINISHED'}
+
+
+class OBJECT_OT_copy_animation(StopMotionOperator):
+    """Import an animated object as stop motion keyframes"""
+    bl_idname = "object.copy_stopmotion_animation"
+    bl_label = "Copy Animation to Stop Motion"
+
+    frame_start: bpy.props.IntProperty(default=1)
+    frame_end: bpy.props.IntProperty(default=49)
+    step: bpy.props.IntProperty(default=2)
+
+    def invoke(self, context, event):
+        context.window_manager.invoke_props_dialog(self)
+        return {'RUNNING_MODAL'}
+
+    def execute(self, context):
+        stop_motion_object = context.object
+        scene = context.scene
+        collection = context.collection
+        view_layer = context.view_layer
+        source = None
+        selection = [o for o in context.selected_objects]
+        possible_sources = (
+            o for o in selection
+            if o is not stop_motion_object and o.type == 'MESH')
+        for selected in possible_sources:
+            break
+        if not selected:
+            return {'CANCELED'}
+        for ob in selection:
+            ob.select_set(False)
+
+        for frame in range(self.frame_start, self.frame_end, self.step):
+            scene.frame_set(frame)
+            target_mesh = bpy.data.meshes.new(name="TEMP_SNAP")
+            target = bpy.data.objects.new(name="TEMP_SNAP", object_data=target_mesh)
+            collection.objects.link(target)
+            target.select_set(True)
+            source = selected.copy()
+            collection.objects.link(source)
+            source.select_set(True)
+            view_layer.objects.active = target
+            stop_motion_object.select_set(False)
+            bpy.ops.object.join()
+            stop_motion_object.select_set(True)
+            view_layer.objects.active = stop_motion_object
+            insert_keyframe(context, target.data, True)
+            bpy.data.objects.remove(target)
+            bpy.data.meshes.remove(target_mesh)
+
+        for ob in selection:
+            ob.select_set(True)
         return {'FINISHED'}
 
 
@@ -163,7 +216,7 @@ class OBJECT_OT_Join_keyframe_stop_motion(StopMotionOperator):
         return {'FINISHED'}
 
 
-class SCREEN_OT_next_or_add_key(bpy.types.Operator):
+class SCREEN_OT_next_or_add_key(StopMotionOperator):
     """Goto next available keyframe, add one if unavailable"""
     bl_idname = "screen.next_or_keyframe_stop_motion"
     bl_label = "Next/Add Next Keyframe"
@@ -207,6 +260,7 @@ def register():
     bpy.utils.register_class(OBJECT_OT_keyframe_stop_motion) # Insert New Key
     bpy.utils.register_class(SCREEN_OT_next_or_add_key)
     bpy.utils.register_class(OBJECT_OT_Join_keyframe_stop_motion)
+    bpy.utils.register_class(OBJECT_OT_copy_animation)
 
 
 def unregister():
@@ -214,6 +268,7 @@ def unregister():
     bpy.utils.unregister_class(SCREEN_OT_next_or_add_key)
     bpy.utils.unregister_class(OBJECT_OT_keyframe_stop_motion)
     bpy.utils.unregister_class(OBJECT_OT_Join_keyframe_stop_motion)
+    bpy.utils.unregister_class(OBJECT_OT_copy_animation)
 
 if __name__ == "__main__":
     register()

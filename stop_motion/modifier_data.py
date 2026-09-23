@@ -139,6 +139,16 @@ class Modifier():
     def reveal_viewport(self):
         self.modifier.show_viewport = True
 
+    def selected_keyframes_objects(self):
+        fcurve = self.get_fcurve()
+        if not fcurve:
+            return []
+        return [
+            self.get_object(int(k.co[1]))
+            for k in fcurve.keyframe_points
+            if k.select_control_point
+            ]
+
 
 class StopMotionOperator(bpy.types.Operator):
     """Wrapper for operators that need Modifier"""

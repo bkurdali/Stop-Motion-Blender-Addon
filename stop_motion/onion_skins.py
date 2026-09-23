@@ -214,11 +214,10 @@ class OnionSkin():
             modifier = self.obj.modifiers.new(modname, 'NODES')
             modifier.node_group = node_group
         # Assign material to second modifier
-        identifier = modifier.node_group.interface.items_tree['Material'].identifier
-        getattr(modifier.properties.inputs, identifier).value = self.material.material
-        # modifier[identifier] = self.material.material
-        # Copy modifier settings from source
+        prop = modifier.node_group.interface.items_tree['Material'].identifier
+        getattr(modifier.properties.inputs, prop).value = self.material.material
 
+        # Copy modifier settings from source
         target_modifier = Modifier(self.source)
         my_modifier = Modifier(self.obj)
         my_modifier.collection = target_modifier.collection

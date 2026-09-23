@@ -50,6 +50,20 @@ def restore(mode, obj):
         bpy.ops.object.mode_set(mode=mode)
 
 
+def set_edit_mode(modifier):
+    bpy.ops.object.mode_set(mode='EDIT', toggle=False)
+
+
+def set_sculpt_mode(modifier):
+    bpy.ops.object.mode_set(mode='SCULPT', toggle=False)
+
+
+def set_object_mode(modifier):
+    update_handler.remove()
+    modifier.reveal_viewport()
+    bpy.ops.object.mode_set(mode='OBJECT', toggle=False)
+
+
 class OBJECT_OT_stop_motion_mode(StopMotionOperator):
     """Switch Mode with corrected meshes """
     bl_idname = "object.stop_motion_mode"
