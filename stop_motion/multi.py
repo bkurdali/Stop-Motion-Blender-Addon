@@ -138,7 +138,6 @@ class OBJECT_OT_stop_motion_multi_materials(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
     def draw(self, context):
-        print("here")
         layout = self.layout
 
 

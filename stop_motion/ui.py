@@ -226,6 +226,7 @@ class OnionSkinPanel(bpy.types.Panel):
 class OnionSkinSettingsPanel(bpy.types.Panel):
     bl_label = "Enable"
     bl_space_type = 'VIEW_3D'
+    bl_idname = "OBJECT_PT_stopmotion_onion_skin_settings"
     bl_region_type = 'UI'
     bl_parent_id = 'OBJECT_PT_stopmotion_onion_skin'
 

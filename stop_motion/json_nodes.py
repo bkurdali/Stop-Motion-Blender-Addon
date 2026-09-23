@@ -184,7 +184,6 @@ class Node_Tree():
             )
 
         for node, node_data in node_list:
-            print(node)
             new_node = node_tree.nodes.new(type=node_data["bl_idname"])
             new_node.name = node
 
@@ -202,7 +201,6 @@ class Node_Tree():
                 parent.location = self.tree_data['nodes'][parent_name]['location']
             for ios in ('inputs', 'outputs'):
                 for i, element in enumerate(node_data[ios]):
-                    print(getattr(new_node,ios)[i])
                     self.set_element(getattr(new_node,ios)[i], element.items())     
 
         for link in self.tree_data['links']:
