@@ -22,10 +22,10 @@ Version Information
 Central class to provide version tagging, perhaps some kind of do_versions
 down the road if I can be bothered
 """
+import addon_utils
 
-MAJOR = 1
-MINOR = 5
 SUB = 0
+MAJOR, MINOR, SUB = addon_utils.modules().mapping['stop_motion'].bl_info['version']
 NAME = "STPMO"
 
 ONION = "onion"
