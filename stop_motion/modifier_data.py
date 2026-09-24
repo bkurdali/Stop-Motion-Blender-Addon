@@ -144,7 +144,7 @@ class Modifier():
         if not fcurve:
             return []
         return [
-            self.get_object(int(k.co[1]))
+            (k.co[0], self.get_object(int(k.co[1])))
             for k in fcurve.keyframe_points
             if k.select_control_point
             ]
@@ -164,4 +164,5 @@ class StopMotionOperator(bpy.types.Operator):
             cls.poll_message_set(f"{ob.name} Not Initialized")
             return False
         return True
+
 

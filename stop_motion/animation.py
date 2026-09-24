@@ -36,6 +36,17 @@ import os
 from .modifier_data import Modifier, StopMotionOperator
 
 
+def sample_transform_time(scene, ob, frames):
+    """ Slow, uses frame set"""
+    frame_original = scene.frame_current
+    transforms = []
+    for frame in frames:
+        scene.frame_set(int(frame))
+        transforms.append(ob.matrix_world.copy())
+    scene.frame_set(int(scene.frame_original))
+    return transforms
+
+
 class OBJECT_OT_add_stop_motion(bpy.types.Operator):
     """Create a new stop motion Object with an initial keyframe"""
     bl_idname = "object.add_stop_motion"
@@ -272,3 +283,5 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
+

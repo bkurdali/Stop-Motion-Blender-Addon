@@ -21,11 +21,13 @@ if "bpy" in locals():
     import importlib
     importlib.reload(update_handler)
     importlib.reload(modifier_data)
+    importlib.reload(animation)
     importlib.reload(version)
     importlib.reload(modes)
 else:
     from . import update_handler
     from . import modifier_data
+    from . import animation
     from . import version
     from . import modes
 
@@ -53,23 +55,26 @@ class Multiples(StopMotionOperator):
     def execute(self, context):
         stopmo = context.object
         modifier = Modifier(stopmo)
+        scene = context.scene
         if not modifier:
-            return {'CANCELED'}
-        frame_objects = modifier.selected_keyframes_objects()
+            return {'CANCELLED'}
+        keyframes, frame_objects = list(zip(*modifier.selected_keyframes_objects()))
         if not frame_objects:
-            return {'CANCELED'}
+            return {'CANCELLED'}
         if stopmo.onion_skin_settings.enable:
             stopmo.onion_skin_settings.enable = False
             scene.multiple_stop_motion_settings.restore_onionskins = True
         collection = bpy.data.collections.new(COLLECTION_NAME)
         context.collection.children.link(collection)
-        for frame_object in frame_objects:
+        transforms = animation.sample_transform_time(scene, stopmo, keyframes)
+        for frame_object, world_matrix in zip(frame_objects, transforms):
             collection.objects.link(frame_object)
             frame_object.select_set(state=True)
+            frame_object.matrix_world = world_matrix
         stopmo.select_set(state=False)
         context.view_layer.objects.active = frame_objects[0]
-        context.scene.multiple_stop_motion_settings.editing = True
-        context.scene.multiple_stop_motion_settings.stopmo_object = stopmo.name
+        scene.multiple_stop_motion_settings.editing = True
+        scene.multiple_stop_motion_settings.stopmo_object = stopmo.name
         self.set_mode(modifier)
         return {'FINISHED'}
 
@@ -134,7 +139,7 @@ class OBJECT_OT_stop_motion_multi_materials(bpy.types.Operator):
         return True
 
     def invoke(self, context, event):
-        context.window_manager.invoke_props_dialog(self)
+        context.window_manager.invoke_props_dialog(self, confirm_text="Copy to Frames")
         return {'RUNNING_MODAL'}
 
     def draw(self, context):
@@ -148,12 +153,8 @@ class OBJECT_OT_stop_motion_multi_materials(bpy.types.Operator):
         if ob:
             is_sortable = len(ob.material_slots) > 1
             rows = 5 if is_sortable else 3
-
-
             row = layout.row()
-
             row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=rows)
-
             col = row.column(align=True)
             col.operator("object.material_slot_add", icon='ADD', text="")
             col.operator("object.material_slot_remove", icon='REMOVE', text="")
@@ -188,7 +189,7 @@ class OBJECT_OT_stop_motion_multi_materials(bpy.types.Operator):
             source = ob
         else:
             modifier = Modifier(ob)
-            targets = modifier.selected_keyframes_objects()
+            targets = [item[1] for item in modifier.selected_keyframes_objects()]
             source = modifier.get_object()
         for target in targets:
             for idx, material in enumerate(source.data.materials):
@@ -229,3 +230,4 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+

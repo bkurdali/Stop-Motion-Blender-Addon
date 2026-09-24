@@ -138,9 +138,7 @@ class AdapativePanel():
 
 class StopMotionControls():
     main_operators = [
-        (
-            "object.keyframe_stop_motion", "Insert Keyframe", 'DECORATE_KEYFRAME',
-            {"use_copy": True}),
+        ("object.keyframe_stop_motion", "Insert Keyframe", 'DECORATE_KEYFRAME', {"use_copy": True}),
         ("screen.next_or_keyframe_stop_motion", "Next/New Keyframe", 'NEXT_KEYFRAME', {}),
         ("object.join_stop_motion", "Join Meshes", 'MOD_BOOLEAN', {}),
         ("object.copy_stopmotion_animation", "Copy Animation as Stop Motion", 'PARTICLE_POINT',{}),
@@ -149,7 +147,7 @@ class StopMotionControls():
     multi_operators = [
         ("object.stop_motion_material_multiples", "Assign Materials", 'MATERIAL_DATA',{}),
         ("object.stop_motion_edit_multiples", "Edit Selected Frames", 'STICKY_UVS_DISABLE',{}),
-        #("object.stop_motion_sculpt_multiples", "Sculpt Selected Frames", 'OUTLINER_OB_FORCE_FIELD',{}),
+        # Can't sculpt multiples in Blender Yet ("object.stop_motion_sculpt_multiples", "Sculpt Selected Frames", 'OUTLINER_OB_FORCE_FIELD',{}),
         ("object.stop_motion_exit_multiples", "Exit Multiple Editing", 'CANCEL_LARGE',{}),
 
     ]
