@@ -68,5 +68,6 @@ def frame_name(index, obj):
 def collection_name(obj):
     return f"{NAME}_{FRAME}s_{obj.name}"
 
+
 def modifier_name():
     return bl_info['name'].replace(" ","")
