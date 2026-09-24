@@ -25,8 +25,7 @@ else:
 
 import bpy
 
-MODNAME = "StopMotion"
-COLNAME = "StopMotion Sources"
+MODNAME = version.modifier_name()
 
 # Data  Helpers
 
@@ -164,5 +163,6 @@ class StopMotionOperator(bpy.types.Operator):
             cls.poll_message_set(f"{ob.name} Not Initialized")
             return False
         return True
+
 
 

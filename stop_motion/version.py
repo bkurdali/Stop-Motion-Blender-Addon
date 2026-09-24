@@ -25,7 +25,8 @@ down the road if I can be bothered
 import addon_utils
 
 SUB = 0
-MAJOR, MINOR, SUB = addon_utils.modules().mapping['stop_motion'].bl_info['version']
+bl_info = addon_utils.modules().mapping['stop_motion'].bl_info
+MAJOR, MINOR, SUB = bl_info['version']
 NAME = "STPMO"
 
 ONION = "onion"
@@ -66,3 +67,6 @@ def frame_name(index, obj):
 
 def collection_name(obj):
     return f"{NAME}_{FRAME}s_{obj.name}"
+
+def modifier_name():
+    return bl_info['name'].replace(" ","")
