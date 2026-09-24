@@ -95,7 +95,7 @@ class AdapativePanel():
 
     def scale(self):
         """set element scale based on region width"""
-        if self.width < self.small_icon:
+        if self.width <= self.small_icon:
             return 1
         return 2
 

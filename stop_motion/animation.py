@@ -43,7 +43,7 @@ def sample_transform_time(scene, ob, frames):
     for frame in frames:
         scene.frame_set(int(frame))
         transforms.append(ob.matrix_world.copy())
-    scene.frame_set(int(scene.frame_original))
+    scene.frame_set(int(frame_original))
     return transforms
 
 
@@ -283,5 +283,6 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
 

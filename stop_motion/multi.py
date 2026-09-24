@@ -58,9 +58,11 @@ class Multiples(StopMotionOperator):
         scene = context.scene
         if not modifier:
             return {'CANCELLED'}
-        keyframes, frame_objects = list(zip(*modifier.selected_keyframes_objects()))
-        if not frame_objects:
+        edit_frames = modifier.selected_keyframes_objects()
+        if not edit_frames:
             return {'CANCELLED'}
+        keyframes, frame_objects = list(zip(*edit_frames))
+
         if stopmo.onion_skin_settings.enable:
             stopmo.onion_skin_settings.enable = False
             scene.multiple_stop_motion_settings.restore_onionskins = True
@@ -75,6 +77,7 @@ class Multiples(StopMotionOperator):
         context.view_layer.objects.active = frame_objects[0]
         scene.multiple_stop_motion_settings.editing = True
         scene.multiple_stop_motion_settings.stopmo_object = stopmo.name
+        stopmo.hide_viewport = True
         self.set_mode(modifier)
         return {'FINISHED'}
 
@@ -110,6 +113,7 @@ class OBJECT_OT_stop_motion_exit_multiples(bpy.types.Operator):
     def execute(self, context):
         scene = context.scene
         stopmo = bpy.data.objects[scene.multiple_stop_motion_settings.stopmo_object]
+        stopmo.hide_viewport = False
         modes.set_object_mode(Modifier(stopmo))
         stopmo.select_set(True)
         context.view_layer.objects.active = stopmo
@@ -230,4 +234,5 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
