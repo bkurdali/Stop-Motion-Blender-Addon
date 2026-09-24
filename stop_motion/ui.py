@@ -215,6 +215,10 @@ class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
             col,
             "OBJECT_PT_stopmotion_onion_skin", "Onion Skins", 'GP_MULTIFRAME_EDITING')
 
+        col.separator(factor=0.8)
+        self.pop_over(
+            col,
+            "OBJECT_PT_stopmotion_settings", "Settings", 'PREFERENCES')
 
 class OnionSkinPanel(bpy.types.Panel):
     bl_label = "Onion Skin"
@@ -326,6 +330,33 @@ class StopMotionMaterialSettingsPanel(bpy.types.Panel):
                 row.operator("object.material_slot_deselect", text="Deselect")
         row = layout.row()
         row.operator("object.stop_motion_material_multiples", text="Copy to Frames")
+
+
+class StopMotionSettingsPanel(bpy.types.Panel):
+    bl_label = "Settings"
+    bl_idname = "OBJECT_PT_stopmotion_settings"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+
+    def draw(self, context):
+        pass
+
+
+class StopMotionSettingsTweakPanel(bpy.types.Panel):
+    bl_label = "Settings"
+    bl_space_type = 'VIEW_3D'
+    bl_idname = "OBJECT_PT_stopmotion_settings_tweak"
+    bl_region_type = 'UI'
+    bl_parent_id = 'OBJECT_PT_stopmotion_settings'
+
+    def draw(self, context):
+        layout = self.layout
+        bpy.types.USERPREF_PT_addons.draw_addon_preferences(
+            layout,
+            context,
+            context.preferences.addons['stop_motion'].preferences
+            )
+
 # Menus
 
 
@@ -391,6 +422,9 @@ def register():
     bpy.utils.register_class(StopMotionMaterialPanel)
     bpy.utils.register_class(StopMotionMaterialSettingsPanel)
 
+    bpy.utils.register_class(StopMotionSettingsPanel)
+    bpy.utils.register_class(StopMotionSettingsTweakPanel)
+
     bpy.utils.register_class(StopMotionPanel)
     extend_menus()
     KeyMaps.map(bpy.context)
@@ -406,6 +440,9 @@ def unregister():
 
     bpy.utils.unregister_class(StopMotionMaterialSettingsPanel)
     bpy.utils.unregister_class(StopMotionMaterialPanel)
+
+    bpy.utils.unregister_class(StopMotionSettingsTweakPanel)
+    bpy.utils.unregister_class(StopMotionSettingsPanel)
 
     bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion)
     bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion_Mode)
