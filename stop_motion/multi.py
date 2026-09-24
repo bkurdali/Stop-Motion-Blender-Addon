@@ -142,50 +142,6 @@ class OBJECT_OT_stop_motion_multi_materials(bpy.types.Operator):
             return False
         return True
 
-    def invoke(self, context, event):
-        context.window_manager.invoke_props_dialog(self, confirm_text="Copy to Frames")
-        return {'RUNNING_MODAL'}
-
-    def draw(self, context):
-        layout = self.layout
-
-
-        ob = context.object
-
-        space = context.space_data
-
-        if ob:
-            is_sortable = len(ob.material_slots) > 1
-            rows = 5 if is_sortable else 3
-            row = layout.row()
-            row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=rows)
-            col = row.column(align=True)
-            col.operator("object.material_slot_add", icon='ADD', text="")
-            col.operator("object.material_slot_remove", icon='REMOVE', text="")
-
-            col.separator()
-
-            col.menu("MATERIAL_MT_context_menu", icon='DOWNARROW_HLT', text="")
-
-            if is_sortable:
-                col.separator()
-
-                col.operator("object.material_slot_move", icon='TRIA_UP', text="").direction = 'UP'
-                col.operator("object.material_slot_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
-
-        row = layout.row()
-
-        if ob:
-            row.template_ID(ob, "active_material", new="material.new")
-
-            if ob.mode == 'EDIT':
-                row = layout.row(align=True)
-                row.operator("object.material_slot_assign", text="Assign")
-                if ob.type != 'FONT':
-                    row.operator("object.material_slot_select", text="Select")
-                    row.operator("object.material_slot_deselect", text="Deselect")
-
-
     def execute(self, context):
         ob = context.object
         if context.scene.multiple_stop_motion_settings.editing:
@@ -234,5 +190,6 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
 

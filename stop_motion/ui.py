@@ -145,7 +145,7 @@ class StopMotionControls():
 
     ]
     multi_operators = [
-        ("object.stop_motion_material_multiples", "Assign Materials", 'MATERIAL_DATA',{}),
+        # ("object.stop_motion_material_multiples", "Assign Materials", 'MATERIAL_DATA',{}),
         ("object.stop_motion_edit_multiples", "Edit Selected Frames", 'STICKY_UVS_DISABLE',{}),
         # Can't sculpt multiples in Blender Yet ("object.stop_motion_sculpt_multiples", "Sculpt Selected Frames", 'OUTLINER_OB_FORCE_FIELD',{}),
         ("object.stop_motion_exit_multiples", "Exit Multiple Editing", 'CANCEL_LARGE',{}),
@@ -197,6 +197,11 @@ class StopMotionPanel(bpy.types.Panel, AdapativePanel, StopMotionControls):
             for operator_id, text, icon, props in operator_list:
                 self.operator_button(col, operator_id, text, icon, props)
             col.separator(factor=0.4)
+
+        self.pop_over(
+            col,
+            "OBJECT_PT_stopmotion_materials", "Material Assignment", 'MATERIAL_DATA')
+        col.separator(factor=0.4)
 
         running = update_handler.is_running()
         icon = 'PLAY' if not running else 'SNAP_FACE'
@@ -260,6 +265,67 @@ class OnionSkinSettingsPanel(bpy.types.Panel):
         layout.separator(factor=1)
 
 
+class StopMotionMaterialPanel(bpy.types.Panel):
+    bl_label = "Material Assignment"
+    bl_idname = "OBJECT_PT_stopmotion_materials"
+    bl_space_type = 'VIEW_3D'
+    bl_region_type = 'UI'
+
+    def draw(self, context):
+        pass
+
+
+class StopMotionMaterialSettingsPanel(bpy.types.Panel):
+    bl_label = "Materials"
+    bl_space_type = 'VIEW_3D'
+    bl_idname = "OBJECT_PT_stopmotion_materials_settings"
+    bl_region_type = 'UI'
+    bl_parent_id = 'OBJECT_PT_stopmotion_materials'
+
+    def draw(self, context):
+        layout = self.layout
+        ob = context.object
+        space = context.space_data
+        if not ob:
+            return # bail early if nothing to do
+        modifier = Modifier(ob)
+        editing_frames = context.scene.multiple_stop_motion_settings.editing
+        if not modifier and not editing_frames:
+            return # bail a bit later if nothing to do
+        if modifier:
+            ob = modifier.get_object() # read the current frame rather than the object
+
+        is_sortable = len(ob.material_slots) > 1
+        rows = 5 if is_sortable else 3
+        row = layout.row()
+        row.template_list("MATERIAL_UL_matslots", "", ob, "material_slots", ob, "active_material_index", rows=rows)
+        col = row.column(align=True)
+        col.operator("object.material_slot_add", icon='ADD', text="")
+        col.operator("object.material_slot_remove", icon='REMOVE', text="")
+
+        col.separator()
+
+        col.menu("MATERIAL_MT_context_menu", icon='DOWNARROW_HLT', text="")
+
+        if is_sortable:
+            col.separator()
+
+            col.operator("object.material_slot_move", icon='TRIA_UP', text="").direction = 'UP'
+            col.operator("object.material_slot_move", icon='TRIA_DOWN', text="").direction = 'DOWN'
+
+        row = layout.row()
+
+
+        row.template_ID(ob, "active_material", new="material.new")
+
+        if ob.mode == 'EDIT':
+            row = layout.row(align=True)
+            row.operator("object.material_slot_assign", text="Assign")
+            if ob.type != 'FONT':
+                row.operator("object.material_slot_select", text="Select")
+                row.operator("object.material_slot_deselect", text="Deselect")
+        row = layout.row()
+        row.operator("object.stop_motion_material_multiples", text="Copy to Frames")
 # Menus
 
 
@@ -322,6 +388,9 @@ def register():
     bpy.utils.register_class(OnionSkinPanel)
     bpy.utils.register_class(OnionSkinSettingsPanel)
 
+    bpy.utils.register_class(StopMotionMaterialPanel)
+    bpy.utils.register_class(StopMotionMaterialSettingsPanel)
+
     bpy.utils.register_class(StopMotionPanel)
     extend_menus()
     KeyMaps.map(bpy.context)
@@ -331,8 +400,12 @@ def unregister():
     KeyMaps.unmap()
     revert_menus()
     bpy.utils.unregister_class(StopMotionPanel)
+
     bpy.utils.unregister_class(OnionSkinSettingsPanel)
     bpy.utils.unregister_class(OnionSkinPanel)
+
+    bpy.utils.unregister_class(StopMotionMaterialSettingsPanel)
+    bpy.utils.unregister_class(StopMotionMaterialPanel)
 
     bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion)
     bpy.utils.unregister_class(VIEW3D_MT_PIE_StopMotion_Mode)
