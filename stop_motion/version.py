@@ -61,14 +61,32 @@ def main_tag(item):
     item_tag[1]['name'] = item.name
     item[item_tag[0]] = item_tag[1]
 
+def prefix():
+    return f"{NAME}_{FRAME}_"
+
 
 def frame_name(index, obj):
-    return f"{NAME}_{FRAME}_{obj.name}_{index:04}"
+    return f"{prefix()}{obj.name}_{index:04}"
 
 
 def collection_name(obj):
-    return f"{NAME}_{FRAME}s_{obj.name}"
+    return f"{prefix()}{obj.name}"
 
 
 def modifier_name():
     return bl_info['name'].replace(" ","")
+
+
+def update_frame_name(newstring, old_frame_name):
+    oldstring = old_frame_name.replace(prefix(),"").split('_')[-2]
+    return old_Frame_name.replace(oldstring, newstring)
+
+
+def update_collection_name(newstring, old_collection_name):
+    oldstring = old_collection_name.replace(prefix(),"")
+    return old_collection_name.replace(oldstring, newstring)
+
+
+
+
+
