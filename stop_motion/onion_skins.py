@@ -157,7 +157,8 @@ class OnionMaterial():
             self.material.diffuse_color[i] = value
 
     def set_name(self):
-        self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}"
+        # self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}"
+        self.name = versions.onion_skin_material_name(self.forward, self.index)
 
 
 class OnionSkin():
@@ -167,7 +168,8 @@ class OnionSkin():
     copy_props = ["parent", "parent_type", "matrix_parent_inverse", "matrix_world"]
 
     def set_name(self):
-        self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}_{self.source.name}"
+        # self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}_{self.source.name}"
+        self.name = version.onion_skin_name(self.forward, self.index, self.source.name)
 
     def __init__(self, scene, source, offset, index, color, opacity, create):
         """ Create an onion skin object """
@@ -377,3 +379,4 @@ def unregister():
     bpy.utils.unregister_class(OBJECT_OT_sync_onion_skins)
     del bpy.types.Object.onion_skin_settings
     bpy.utils.unregister_class(StopMotionOnionSkinSettings)
+

@@ -73,18 +73,56 @@ def collection_name(obj):
     return f"{prefix()}{obj.name}"
 
 
+def onion_skin_instance(forward, index):
+    return f"{onion_prefix()}{'+' if forward else '-'}_{index:02}"
+
+
+def onion_skin_name(forward, index, source_id):
+    return f"{onion_skin_instance(forward, index)}_{source_id}"
+
+
+def onion_skins_name(source_id):
+    """ onion skin collection name """
+    return f"{onion_prefix()}{source_id}"
+
+
+onion_skin_material_name = onion_skin_instance
+
+
 def modifier_name():
     return bl_info['name'].replace(" ","")
 
+# ID fixing functions (object names but will be replaced by hashes)
 
-def update_frame_name(newstring, old_frame_name):
-    oldstring = old_frame_name.replace(prefix(),"").split('_')[-2]
-    return old_Frame_name.replace(oldstring, newstring)
+# TODO updating names
+# TODO split detecting bad id into own function
 
 
-def update_collection_name(newstring, old_collection_name):
-    oldstring = old_collection_name.replace(prefix(),"")
-    return old_collection_name.replace(oldstring, newstring)
+def update_frame_id(new_id, old_frame_name):
+    old_id = old_frame_name.replace(prefix(),"").split('_')[-2]
+    return old_Frame_name.replace(old_id, new_id)
+
+
+def update_collection_id(new_id, old_collection_name):
+    old_id = old_collection_name.replace(prefix(),"")
+    return old_collection_name.replace(old_id, new_id)
+
+
+def get_onion_id_prefix_from_name(onion_name):
+    components = onion_name.replace(prefix(), "")split('_')
+    id_prefix = f"{prefix()}{'_'.join(components[0], components[1])}_"
+    return id_prefix
+
+
+def update_onion_skin_frames_id(new_id, old_onion_skin_name):
+    id_prefix = get_onion_id_prefix_from_name(old_onion_skin_name)
+    old_id = old_onion_skin_name.replace(id_prefix,"")
+    return old_onion_skin_name.replace(old_id, new_id)
+
+
+def update_onion_skin_collection_id(new_id, old_onion_skins_name):
+    return f"{onion_prefix()}{new_id}"
+
 
 
 
