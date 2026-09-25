@@ -162,6 +162,12 @@ class OBJECT_OT_copy_animation(StopMotionOperator):
     frame_end: bpy.props.IntProperty(default=49)
     step: bpy.props.IntProperty(default=2)
 
+    @classmethod
+    def poll(cls, context):
+        return (
+            StopMotionOperator.poll(context) and context.mode == 'OBJECT'
+            and len(context.selected_objects) > 1)
+
     def invoke(self, context, event):
         context.window_manager.invoke_props_dialog(self)
         return {'RUNNING_MODAL'}
@@ -290,6 +296,7 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
 
 
