@@ -19,8 +19,10 @@
 
 """
 Version Information
-Central class to provide version tagging, perhaps some kind of do_versions
-down the road if I can be bothered
+Central class to provide version tagging and naming of blender data,
+will allow for version updates down the road
+TODO current version depends on object names; should be fixed to an ID
+TODO once fixed, need a do_versions type function to update old files
 """
 import addon_utils
 
@@ -109,7 +111,7 @@ def update_collection_id(new_id, old_collection_name):
 
 
 def get_onion_id_prefix_from_name(onion_name):
-    components = onion_name.replace(prefix(), "")split('_')
+    components = onion_name.replace(prefix(), "").split('_')
     id_prefix = f"{prefix()}{'_'.join(components[0], components[1])}_"
     return id_prefix
 

@@ -158,7 +158,7 @@ class OnionMaterial():
 
     def set_name(self):
         # self.name = f"{version.onion_prefix()}{'+' if self.forward else '-'}_{self.index:02}"
-        self.name = versions.onion_skin_material_name(self.forward, self.index)
+        self.name = version.onion_skin_material_name(self.forward, self.index)
 
 
 class OnionSkin():
