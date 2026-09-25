@@ -167,6 +167,10 @@ class OBJECT_OT_copy_animation(StopMotionOperator):
         return {'RUNNING_MODAL'}
 
     def execute(self, context):
+        # TODO evaluate transformation keyframes/ transformation of stop motion object
+        # TODO multiple object copy
+        # TODO merge into existing keyframes
+        # TODO time shifting/range shifting/insert replace
         stop_motion_object = context.object
         scene = context.scene
         collection = context.collection
@@ -189,14 +193,17 @@ class OBJECT_OT_copy_animation(StopMotionOperator):
             target = bpy.data.objects.new(name="TEMP_SNAP", object_data=target_mesh)
             collection.objects.link(target)
             target.select_set(True)
+
             source = selected.copy()
             collection.objects.link(source)
             source.select_set(True)
+
             view_layer.objects.active = target
             stop_motion_object.select_set(False)
             bpy.ops.object.join()
             stop_motion_object.select_set(True)
             view_layer.objects.active = stop_motion_object
+
             insert_keyframe(context, target.data, True)
             bpy.data.objects.remove(target)
             bpy.data.meshes.remove(target_mesh)
@@ -283,6 +290,7 @@ def unregister():
 
 if __name__ == "__main__":
     register()
+
 
 
 
