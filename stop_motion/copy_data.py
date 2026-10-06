@@ -34,4 +34,13 @@ def materials(source, target):
 
 def uvs(source, target):
     """ Copy UV layers from source to target but leave intact existing layers """
-    pass
+    for uv_layer in source.data.uv_layers:
+        name = uv_layer.name
+        if name in target.uv_layers:
+            continue
+        target.data.uv_layers.new(name=name)
+        for i, co in enumerate(uv_layer.uv):
+            try:
+                target.data.uv_layers[name].uv[i].vector = co.vector
+            except IndexError:
+                break # we changed vertex count somewhere
