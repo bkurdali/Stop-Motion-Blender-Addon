@@ -113,7 +113,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
         export_object = bpy.data.objects.new(
             name=f"{stop_motion_object.name}_export",object_data=data)
         context.collection.objects.link(export_object)
-        uv_layer = export_object.uv_layers.active # obj will pick the active layer
+        uv_layer = export_object.data.uv_layers.active # obj will pick the active layer
         uv_name = ""
         #TODO store active_uv layer index, render uv layer so we can restore all
         if uv_layer and preferences.use_uvs:
