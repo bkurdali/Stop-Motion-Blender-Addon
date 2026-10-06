@@ -45,8 +45,8 @@ def onion_prefix():
     return f"{NAME}_{ONION}_"
 
 
-def tag():
-    return (NAME, {'major': MAJOR, 'minor':MINOR})
+def tag(name=NAME):
+    return (name, {'major': MAJOR, 'minor':MINOR})
 
 
 def onion_tag(item):
@@ -62,6 +62,18 @@ def main_tag(item):
     item_tag[1]['type'] = MAIN_OBJECT
     item_tag[1]['name'] = item.name
     item[item_tag[0]] = item_tag[1]
+
+
+def obj_io_tag_data(item, uv_layer, export_index):
+    """ Store Data for Obj Import """
+    item[NAME]["obj_uv"] = uv_layer
+    item[NAME]["obj_source"] = export_index
+
+
+def obj_io_restore(item):
+    """ Return Tagged data """
+    return item[NAME]["obj_uv"], item[NAME]["obj_source"]
+
 
 def prefix():
     return f"{NAME}_{FRAME}_"

@@ -31,6 +31,9 @@ import bpy
 from .modifier_data import Modifier
 
 # Keymaps
+# Todo find out the keyconfig for next keyframe and override it because I don't do the defaults
+# get from .window_manager.keyconfigs.user.keymaps['Frames'].active() (or.active.keymaps?)
+# then .keymap_items[] index by number or name but names repeat :/
 
 
 class KeyMaps():

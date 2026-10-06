@@ -43,7 +43,7 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
 
     use_uvs: bpy.props.BoolProperty(
         name="Use UVs",
-        default=False)
+        default=True)
 
 
     use_materials:bpy.props.BoolProperty(

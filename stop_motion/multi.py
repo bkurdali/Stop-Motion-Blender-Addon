@@ -24,12 +24,14 @@ if "bpy" in locals():
     importlib.reload(animation)
     importlib.reload(version)
     importlib.reload(modes)
+    importlib.reload(copy_data)
 else:
     from . import update_handler
     from . import modifier_data
     from . import animation
     from . import version
     from . import modes
+    from . import copy_data
 
 import bpy
 import os
@@ -204,11 +206,7 @@ class OBJECT_OT_stop_motion_multi_materials(bpy.types.Operator):
             targets = [item[1] for item in modifier.selected_keyframes_objects()]
             source = modifier.get_object()
         for target in targets:
-            for idx, material in enumerate(source.data.materials):
-                try:
-                    target.data.materials[idx] = material
-                except IndexError:
-                    target.data.materials.append(material)
+            copy_data.materials(source, targets)
 
         return {'FINISHED'}
 

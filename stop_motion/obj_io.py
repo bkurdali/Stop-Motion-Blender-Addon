@@ -26,14 +26,20 @@ if "bpy" in locals():
     import importlib
     importlib.reload(modifier_data)
     importlib.reload(modes)
+    importlib.reload(version)
+    importlib.reload(copy_data)
 else:
     from . import modifier_data
     from . import modes
+    from . import version
+    from . import copy_data
 
 import bpy
 import os
 from .modifier_data import Modifier, StopMotionOperator
 
+
+# TODO store material, uv layer name on export, restore on import
 
 def path(context):
     return context.blend_data.filepath.replace(
@@ -50,6 +56,7 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
             self.report({'WARNING'}, "No OBJ; Export something first")
             return {'CANCELLED'}
         stop_motion_object = context.object
+        modifier = Modifier(stop_motion_object)
         preferences = context.preferences.addons[__package__].preferences
 
         bpy.ops.wm.obj_import(
@@ -68,6 +75,15 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
         context.view_layer.objects.active = stop_motion_object
 
         bpy.ops.object.keyframe_stop_motion(use_copy=False)
+        #TODO check for tags and restore materials/ UVs
+        uv_layer, source_index = version.obj_io_restore(stop_motion_object)
+        source, target = (modifier.get_object(source_index), modifier.get_object())
+        copy_data.materials(source, target)
+        if uv_layer:
+            pass # rename the uv_layer to the stored uv_layer name
+        copy_data.uvs(source, target)
+
+
         for ob in imported_objects:
             if ob is not stop_motion_object:
                 bpy.data.objects.remove(ob, do_unlink=True)
@@ -91,11 +107,19 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
         preferences = context.preferences.addons[__package__].preferences
         mode = stop_motion_object.mode
         modes.set_object(mode)
-        data = Modifier(stop_motion_object).get_object().data
+        modifier = Modifier(stop_motion_object)
+        data = modifier.get_object().data
 
         export_object = bpy.data.objects.new(
             name=f"{stop_motion_object.name}_export",object_data=data)
         context.collection.objects.link(export_object)
+        uv_layer = export_object.uv_layers.active
+        uv_name = ""
+        #TODO store active_uv layer index, render uv layer so we can restore all
+        if uv_layer and preferences.use_uvs:
+            uv_name = uv_layer.name
+
+        version.obj_io_tag_data(stop_motion_object, uv_name, modifier.index)
 
         stop_motion_object.select_set(False)
         export_object.select_set(True)
@@ -122,7 +146,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
             export_uv=preferences.use_uvs,
             export_normals=preferences.use_normals,
             export_colors=preferences.use_colors,
-            export_materials=preferences.use_materials,
+            export_materials=preferences.use_materials, #TODO never export, always restore
 
             export_vertex_groups=preferences.use_vertex_groups,
             export_smooth_groups=preferences.use_smooth_groups,
