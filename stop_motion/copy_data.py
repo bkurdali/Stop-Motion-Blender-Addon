@@ -39,6 +39,7 @@ def uvs(source, target):
         if name in target.data.uv_layers:
             continue
         target.data.uv_layers.new(name=name)
+        # probably should foreach_get/set() for speed instead of looping
         for i, co in enumerate(uv_layer.uv):
             try:
                 target.data.uv_layers[name].uv[i].vector = co.vector

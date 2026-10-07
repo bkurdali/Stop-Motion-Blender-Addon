@@ -211,6 +211,21 @@ class OBJECT_OT_stop_motion_multi_materials(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class OBJECT_OT_stop_motion_uv_copy(StopMotionOperator):
+    """ Copy UVs from one frame to the other """
+    bl_idname = "object.stop_motion_uv_copy"
+    bl_label = "Copy UVs"
+
+    def execute(self, context):
+        ob = context.object
+        modifier = Modifier(ob)
+        targets = [item[1] for item in modifier.selected_keyframes_objects()]
+        source = modifier.get_object()
+        for target in targets:
+            copy_data.uvs(source, target)
+        return {'FINISHED'}
+
+
 class StopMotionMultiplesSettings(bpy.types.PropertyGroup):
     """Multiples Editing Memory, stored on the Scene"""
 
@@ -228,6 +243,7 @@ def register():
     bpy.utils.register_class(OBJECT_OT_stop_motion_sculpt_multiples)
     bpy.utils.register_class(OBJECT_OT_stop_motion_exit_multiples)
     bpy.utils.register_class(OBJECT_OT_stop_motion_multi_materials)
+    bpy.utils.register_class(OBJECT_OT_stop_motion_uv_copy)
 
 
 def unregister():
@@ -235,6 +251,7 @@ def unregister():
     bpy.utils.unregister_class(OBJECT_OT_stop_motion_sculpt_multiples)
     bpy.utils.unregister_class(OBJECT_OT_stop_motion_exit_multiples)
     bpy.utils.unregister_class(OBJECT_OT_stop_motion_multi_materials)
+    bpy.utils.unregister_class(OBJECT_OT_stop_motion_uv_copy)
     del bpy.types.Scene.multiple_stop_motion_settings
     bpy.utils.unregister_class(StopMotionMultiplesSettings)
 

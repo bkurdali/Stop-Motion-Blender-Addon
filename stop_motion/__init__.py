@@ -40,7 +40,7 @@ import bpy
 bl_info = {
     "name": "Stop Motion",
     "author": "Ursula Kurdali",
-    "version": (1, 5, 0),
+    "version": (1, 5, 1),
     "blender": (5, 2, 0),
     "location": "View3D > Sidebar",
     "description": "Turns Blender into a Virtual Stop Motion Studio",

@@ -39,7 +39,7 @@ import os
 from .modifier_data import Modifier, StopMotionOperator
 
 
-# TODO store material, uv layer name on export, restore on import
+# TODO fix bug where if temporary object is placed into an unselectable collection it doesn't export'
 
 def path(context):
     return context.blend_data.filepath.replace(

@@ -149,6 +149,7 @@ class StopMotionControls():
     ]
     multi_operators = [
         ("object.stop_motion_material_multiples", "Assign Materials", 'MATERIAL_DATA',{}),
+        ("object.stop_motion_uv_copy", "Copy UVs to selected frames", 'UV_DATA',{}),
         ("object.stop_motion_edit_multiples", "Edit Selected Frames", 'STICKY_UVS_DISABLE',{}),
         # Can't sculpt multiples in Blender Yet ("object.stop_motion_sculpt_multiples", "Sculpt Selected Frames", 'OUTLINER_OB_FORCE_FIELD',{}),
         ("object.stop_motion_exit_multiples", "Exit Multiple Editing", 'CANCEL_LARGE',{}),
