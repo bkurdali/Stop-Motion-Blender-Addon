@@ -179,7 +179,7 @@ class OBJECT_OT_copy_animation(StopMotionOperator):
         # TODO time shifting/range shifting/insert replace
         stop_motion_object = context.object
         scene = context.scene
-        collection = context.collection
+        collection = scene.collection
         view_layer = context.view_layer
         source = None
         selection = [o for o in context.selected_objects]

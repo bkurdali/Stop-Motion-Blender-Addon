@@ -69,7 +69,7 @@ class Multiples(StopMotionOperator):
             stopmo.onion_skin_settings.enable = False
             scene.multiple_stop_motion_settings.restore_onionskins = True
         collection = bpy.data.collections.new(COLLECTION_NAME)
-        context.collection.children.link(collection)
+        context.scene.collection.children.link(collection)
         transforms = animation.sample_transform_time(scene, stopmo, keyframes)
         for frame_object, world_matrix in zip(frame_objects, transforms):
             collection.objects.link(frame_object)
