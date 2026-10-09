@@ -105,7 +105,7 @@ onion_skin_material_name = onion_skin_instance
 
 
 def modifier_name():
-    return "StopMotion"
+    return "StopMotion" # TODO go back to bl_info
     bl_info = addon_utils.modules().mapping['stop_motion'].bl_info
 
     return bl_info['name'].replace(" ","")
