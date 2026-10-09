@@ -206,7 +206,7 @@ class OBJECT_OT_stop_motion_multi_materials(bpy.types.Operator):
             targets = [item[1] for item in modifier.selected_keyframes_objects()]
             source = modifier.get_object()
         for target in targets:
-            copy_data.materials(source, targets)
+            copy_data.materials(source, target)
 
         return {'FINISHED'}
 

@@ -39,8 +39,6 @@ import os
 from .modifier_data import Modifier, StopMotionOperator
 
 
-# TODO fix bug where if temporary object is placed into an unselectable collection it doesn't export'
-
 def path(context):
     return context.blend_data.filepath.replace(
         ".blend", f"_{context.object.name}_frame.obj")
@@ -112,7 +110,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
 
         export_object = bpy.data.objects.new(
             name=f"{stop_motion_object.name}_export",object_data=data)
-        context.collection.objects.link(export_object)
+        context.scene.collection.objects.link(export_object)
         uv_layer = export_object.data.uv_layers.active # obj will pick the active layer
         uv_name = ""
         #TODO store active_uv layer index, render uv layer so we can restore all

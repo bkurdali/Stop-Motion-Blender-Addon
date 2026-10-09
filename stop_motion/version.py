@@ -27,8 +27,9 @@ TODO once fixed, need a do_versions type function to update old files
 import addon_utils
 
 SUB = 0
-bl_info = addon_utils.modules().mapping['stop_motion'].bl_info
-MAJOR, MINOR, SUB = bl_info['version']
+# bl_info = addon_utils.modules().mapping['stop_motion'].bl_info
+# MAJOR, MINOR, SUB = bl_info['version']
+MAJOR, MINOR, SUB = (1,5,1)
 NAME = "STPMO"
 
 ONION = "onion"
@@ -104,6 +105,9 @@ onion_skin_material_name = onion_skin_instance
 
 
 def modifier_name():
+    return "StopMotion"
+    bl_info = addon_utils.modules().mapping['stop_motion'].bl_info
+
     return bl_info['name'].replace(" ","")
 
 # ID fixing functions (object names but will be replaced by hashes)
