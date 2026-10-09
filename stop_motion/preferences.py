@@ -45,11 +45,6 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         name="Use UVs",
         default=True)
 
-
-    use_materials:bpy.props.BoolProperty(
-        name="Use Materials",
-        default=False)
-
     use_vertex_groups:bpy.props.BoolProperty(
         name="Use Vertex Groups",
         default=False)
@@ -67,7 +62,6 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
         layout.label(text="OBJ IO Preferences")
         layout.prop(self, "use_normals")
         layout.prop(self, "use_uvs")
-        layout.prop(self, "use_materials")
         layout.prop(self, "use_vertex_groups")
         layout.prop(self, "use_smooth_groups")
         layout.prop(self, "use_colors")

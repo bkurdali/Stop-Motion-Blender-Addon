@@ -144,7 +144,7 @@ class OBJECT_OT_export_stop_motion_obj(StopMotionOperator):
             export_uv=preferences.use_uvs,
             export_normals=preferences.use_normals,
             export_colors=preferences.use_colors,
-            export_materials=preferences.use_materials, #TODO never export, always restore
+            export_materials=False,
 
             export_vertex_groups=preferences.use_vertex_groups,
             export_smooth_groups=preferences.use_smooth_groups,
