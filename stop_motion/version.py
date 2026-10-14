@@ -73,7 +73,7 @@ def obj_io_tag_data(item, uv_layer, export_index):
 
 def obj_io_restore(item):
     """ Return Tagged data """
-    return item[NAME]["obj_uv"], item[NAME]["obj_source"]
+    return item[NAME].get("obj_uv", None), item[NAME].get("obj_source",-1)
 
 
 def prefix():

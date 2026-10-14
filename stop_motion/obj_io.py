@@ -56,16 +56,16 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
         stop_motion_object = context.object
         modifier = Modifier(stop_motion_object)
         preferences = context.preferences.addons[__package__].preferences
+        context_override = context.copy()
+        context_override['collection'] = context.scene.collection
+        with bpy.context.temp_override(**context_override):
+            bpy.ops.wm.obj_import(
+                filepath=filepath,
+                clamp_size=0,
 
-        bpy.ops.wm.obj_import(
-            filepath=filepath,
-            clamp_size=0,
+                forward_axis='Y', up_axis='Z',
 
-            forward_axis='Y', up_axis='Z',
-
-            import_vertex_groups=False, validate_meshes=False)
-
-
+                import_vertex_groups=False, validate_meshes=False)
         imported_objects = bpy.context.selected_objects
 
 
@@ -75,12 +75,12 @@ class OBJECT_OT_import_stop_motion_obj(StopMotionOperator):
         bpy.ops.object.keyframe_stop_motion(use_copy=False)
 
         uv_layer, source_index = version.obj_io_restore(stop_motion_object)
-        source, target = (modifier.get_object(source_index), modifier.get_object())
-        copy_data.materials(source, target)
-        if uv_layer:
-            target.data.uv_layers[0].name = uv_layer
-        copy_data.uvs(source, target)
-
+        if uv_layer and source_index >= 0:
+            source, target = (modifier.get_object(source_index), modifier.get_object())
+            copy_data.materials(source, target)
+            if uv_layer:
+                target.data.uv_layers[0].name = uv_layer
+            copy_data.uvs(source, target)
 
         for ob in imported_objects:
             if ob is not stop_motion_object:

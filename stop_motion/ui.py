@@ -22,10 +22,12 @@ if "bpy" in locals():
     importlib.reload(update_handler)
     importlib.reload(modifier_data)
     importlib.reload(multi)
+    importlib.reload(preferences)
 else:
     from . import update_handler
     from . import modifier_data
     from . import multi
+    from . import preferences
 
 import bpy
 from .modifier_data import Modifier
@@ -41,7 +43,7 @@ class KeyMaps():
     settings = (
         (
             "Frames", 'EMPTY', "screen.next_or_keyframe_stop_motion",
-            'UP_ARROW', {}, {}),
+            'DOWN_ARROW', {}, {}),
         (
             "3D View", 'VIEW_3D', "wm.call_menu_pie", 'D',{},
             {'name': 'VIEW3D_MT_PIE_StopMotion'}),

@@ -24,7 +24,7 @@ class StopMotionPreferences(bpy.types.AddonPreferences):
 
     frame_offset: bpy.props.IntProperty(
         name="Frame Offset",
-        description="Use up arrow to key after last frame: 2 for twos, 0 to disable",
+        description="Use arrow to key after last frame: 2 for twos, 0 to disable",
         default=2)
 
     tab_for_pie_menu: bpy.props.BoolProperty(
