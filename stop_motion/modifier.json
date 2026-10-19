@@ -79,48 +79,41 @@
             "from_node": "Group Input Collection",
             "from_socket": 1,
             "multi_input_sort_id": 0,
-            "to_node": "Collection Info",
+            "to_node": "Collection Children",
             "to_socket": 0
         },
         {
-            "from_node": "Compare",
-            "from_socket": 0,
+            "from_node": "Collection Children",
+            "from_socket": 1,
             "multi_input_sort_id": 0,
-            "to_node": "Separate Geometry",
-            "to_socket": 1
-        },
-        {
-            "from_node": "Index",
-            "from_socket": 0,
-            "multi_input_sort_id": 0,
-            "to_node": "Compare",
+            "to_node": "Get List Item",
             "to_socket": 0
         },
         {
-            "from_node": "Group Input Index",
-            "from_socket": 2,
+            "from_node": "Get List Item",
+            "from_socket": 0,
             "multi_input_sort_id": 0,
-            "to_node": "Compare",
-            "to_socket": 1
+            "to_node": "Object Info",
+            "to_socket": 0
         },
         {
-            "from_node": "Separate Geometry",
-            "from_socket": 0,
+            "from_node": "Object Info",
+            "from_socket": 4,
             "multi_input_sort_id": 0,
             "to_node": "Group Output",
             "to_socket": 0
         },
         {
-            "from_node": "Collection Info",
-            "from_socket": 0,
+            "from_node": "Group Input Collection",
+            "from_socket": 2,
             "multi_input_sort_id": 0,
-            "to_node": "Separate Geometry",
-            "to_socket": 0
+            "to_node": "Get List Item",
+            "to_socket": 1
         }
     ],
     "nodes": {
-        "Collection Info": {
-            "bl_idname": "GeometryNodeCollectionInfo",
+        "Collection Children": {
+            "bl_idname": "GeometryNodeCollectionChildren",
             "color": [
                 0.6079999804496765,
                 0.6079999804496765,
@@ -135,47 +128,42 @@
                     "enabled": true,
                     "link_limit": 1,
                     "name": "Collection",
-                    "node": "Collection Info",
+                    "node": "Collection Children",
                     "show_expanded": false,
                     "type": "COLLECTION"
                 },
                 {
-                    "default_value": true,
+                    "default_value": false,
                     "description": "",
                     "enabled": true,
                     "link_limit": 1,
-                    "name": "Separate Children",
-                    "node": "Collection Info",
-                    "show_expanded": false,
-                    "type": "BOOLEAN"
-                },
-                {
-                    "default_value": true,
-                    "description": "",
-                    "enabled": true,
-                    "link_limit": 1,
-                    "name": "Reset Children",
-                    "node": "Collection Info",
+                    "name": "Recursive",
+                    "node": "Collection Children",
                     "show_expanded": false,
                     "type": "BOOLEAN"
                 }
             ],
             "label": "",
             "location": [
-                160.0,
-                -60.000003814697266
+                140.0,
+                -20.0
             ],
             "location_absolute": [
-                160.0,
-                -60.000003814697266
+                140.0,
+                -20.0
             ],
             "mute": false,
-            "name": "Collection Info",
+            "name": "Collection Children",
             "outputs": [
                 {
                     "description": "",
                     "enabled": true,
-                    "name": "Instances"
+                    "name": "Collections"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Objects"
                 }
             ],
             "panel_states": [],
@@ -183,62 +171,58 @@
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
-            "transform_space": "ORIGINAL",
-            "type": "COLLECTION_INFO",
+            "type": "GeometryNodeCollectionChildren",
             "use_custom_color": false,
             "warning_propagation": "ALL",
             "width": 140.0
         },
-        "Compare": {
-            "bl_idname": "FunctionNodeCompare",
+        "Get List Item": {
+            "bl_idname": "GeometryNodeListGetItem",
             "color": [
                 0.6079999804496765,
                 0.6079999804496765,
                 0.6079999804496765
             ],
             "color_tag": "CONVERTER",
-            "data_type": "INT",
             "hide": false,
             "inputs": [
                 {
-                    "default_value": 0,
+                    "default_value": null,
                     "description": "",
                     "enabled": true,
                     "link_limit": 1,
-                    "name": "A",
-                    "node": "Compare",
+                    "name": "List",
+                    "node": "Get List Item",
                     "show_expanded": false,
-                    "type": "INT"
+                    "type": "OBJECT"
                 },
                 {
                     "default_value": 0,
                     "description": "",
                     "enabled": true,
                     "link_limit": 1,
-                    "name": "B",
-                    "node": "Compare",
+                    "name": "Index",
+                    "node": "Get List Item",
                     "show_expanded": false,
                     "type": "INT"
                 }
             ],
             "label": "",
             "location": [
-                160.0,
-                -220.0
+                320.0,
+                -60.0
             ],
             "location_absolute": [
-                160.0,
-                -220.0
+                320.0,
+                -60.0
             ],
-            "mode": "ELEMENT",
             "mute": false,
-            "name": "Compare",
-            "operation": "EQUAL",
+            "name": "Get List Item",
             "outputs": [
                 {
                     "description": "",
                     "enabled": true,
-                    "name": "Result"
+                    "name": "Value"
                 }
             ],
             "panel_states": [],
@@ -246,7 +230,9 @@
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
-            "type": "COMPARE",
+            "socket_type": "OBJECT",
+            "structure_type": "AUTO",
+            "type": "GeometryNodeListGetItem",
             "use_custom_color": false,
             "warning_propagation": "ALL",
             "width": 140.0
@@ -263,68 +249,15 @@
             "inputs": [],
             "label": "",
             "location": [
-                -20.0,
-                -60.000003814697266
+                -60.0,
+                -80.0
             ],
             "location_absolute": [
-                -20.0,
-                -60.000003814697266
+                -60.0,
+                -80.0
             ],
             "mute": false,
             "name": "Group Input Collection",
-            "outputs": [
-                {
-                    "description": "",
-                    "enabled": true,
-                    "name": "Geometry"
-                },
-                {
-                    "description": "",
-                    "enabled": true,
-                    "name": "Collection"
-                },
-                {
-                    "description": "",
-                    "enabled": true,
-                    "name": "Instance Index"
-                },
-                {
-                    "description": "",
-                    "enabled": true,
-                    "name": ""
-                }
-            ],
-            "panel_states": [],
-            "select": false,
-            "show_options": true,
-            "show_preview": false,
-            "show_texture": false,
-            "type": "GROUP_INPUT",
-            "use_custom_color": false,
-            "warning_propagation": "ALL",
-            "width": 140.0
-        },
-        "Group Input Index": {
-            "bl_idname": "NodeGroupInput",
-            "color": [
-                0.6079999804496765,
-                0.6079999804496765,
-                0.6079999804496765
-            ],
-            "color_tag": "INTERFACE",
-            "hide": false,
-            "inputs": [],
-            "label": "",
-            "location": [
-                -20.0,
-                -300.0
-            ],
-            "location_absolute": [
-                -20.0,
-                -300.0
-            ],
-            "mute": false,
-            "name": "Group Input Index",
             "outputs": [
                 {
                     "description": "",
@@ -388,18 +321,18 @@
             ],
             "label": "",
             "location": [
-                560.0000610351562,
-                -60.000003814697266
+                680.0,
+                -60.0
             ],
             "location_absolute": [
-                560.0000610351562,
-                -60.000003814697266
+                680.0,
+                -60.0
             ],
             "mute": false,
             "name": "Group Output",
             "outputs": [],
             "panel_states": [],
-            "select": false,
+            "select": true,
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
@@ -408,8 +341,8 @@
             "warning_propagation": "ALL",
             "width": 140.0
         },
-        "Index": {
-            "bl_idname": "GeometryNodeInputIndex",
+        "Object Info": {
+            "bl_idname": "GeometryNodeObjectInfo",
             "color": [
                 0.6079999804496765,
                 0.6079999804496765,
@@ -417,87 +350,64 @@
             ],
             "color_tag": "INPUT",
             "hide": false,
-            "inputs": [],
-            "label": "",
-            "location": [
-                -20.0,
-                -220.0
-            ],
-            "location_absolute": [
-                -20.0,
-                -220.0
-            ],
-            "mute": false,
-            "name": "Index",
-            "outputs": [
-                {
-                    "description": "",
-                    "enabled": true,
-                    "name": "Index"
-                }
-            ],
-            "panel_states": [],
-            "select": false,
-            "show_options": true,
-            "show_preview": false,
-            "show_texture": false,
-            "type": "INDEX",
-            "use_custom_color": false,
-            "warning_propagation": "ALL",
-            "width": 140.0
-        },
-        "Separate Geometry": {
-            "bl_idname": "GeometryNodeSeparateGeometry",
-            "color": [
-                0.6079999804496765,
-                0.6079999804496765,
-                0.6079999804496765
-            ],
-            "color_tag": "GEOMETRY",
-            "domain": "INSTANCE",
-            "hide": false,
             "inputs": [
                 {
+                    "default_value": null,
                     "description": "",
                     "enabled": true,
                     "link_limit": 1,
-                    "name": "Geometry",
-                    "node": "Separate Geometry",
+                    "name": "Object",
+                    "node": "Object Info",
                     "show_expanded": false,
-                    "type": "GEOMETRY"
+                    "type": "OBJECT"
                 },
                 {
                     "default_value": true,
                     "description": "",
                     "enabled": true,
                     "link_limit": 1,
-                    "name": "Selection",
-                    "node": "Separate Geometry",
+                    "name": "As Instance",
+                    "node": "Object Info",
                     "show_expanded": false,
                     "type": "BOOLEAN"
                 }
             ],
             "label": "",
             "location": [
-                360.0,
-                -60.000003814697266
+                500.0,
+                -60.0
             ],
             "location_absolute": [
-                360.0,
-                -60.000003814697266
+                500.0,
+                -60.0
             ],
             "mute": false,
-            "name": "Separate Geometry",
+            "name": "Object Info",
             "outputs": [
                 {
                     "description": "",
                     "enabled": true,
-                    "name": "Selection"
+                    "name": "Transform"
                 },
                 {
                     "description": "",
                     "enabled": true,
-                    "name": "Inverted"
+                    "name": "Location"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Rotation"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Scale"
+                },
+                {
+                    "description": "",
+                    "enabled": true,
+                    "name": "Geometry"
                 }
             ],
             "panel_states": [],
@@ -505,7 +415,8 @@
             "show_options": true,
             "show_preview": false,
             "show_texture": false,
-            "type": "SEPARATE_GEOMETRY",
+            "transform_space": "ORIGINAL",
+            "type": "OBJECT_INFO",
             "use_custom_color": false,
             "warning_propagation": "ALL",
             "width": 140.0
@@ -531,7 +442,7 @@
             "optional_label": false,
             "parent": "",
             "position": 0,
-            "select": false,
+            "select": true,
             "socket_type": "NodeSocketGeometry",
             "structure_type": "AUTO"
         }
