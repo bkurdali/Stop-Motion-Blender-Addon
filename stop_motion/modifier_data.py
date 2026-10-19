@@ -25,30 +25,26 @@ else:
 
 import bpy
 
-MODNAME = version.modifier_name()
-
 # Data  Helpers
 
 
 class Modifier():
     """ Convenience Stop Motion Modifier Access Class """
 
-    name = MODNAME
-
     def __init__(self, obj):
         self.obj = obj
         if not obj:
             self.modifier = None
         else:
-            self.modifier = obj.modifiers.get(MODNAME)
+            self.modifier = obj.modifiers.get(version.modifier_name())
         if self.modifier:
             # Hopefully we won't use these outside the class
             self.__index__ = self.__get_input_label__("Instance Index")
             self.__collection__ = self.__get_input_label__("Collection")
 
-            # Handy for e.g. < row.prop(m.modifier, m.index_prop) >
-            self.index_prop = f'["{self.__index__}"]'
-            self.collection_prop = f'["{self.__collection__}"]'
+    @classmethod
+    def name(cls):
+        return version.modifier_name()
 
     def __bool__(self):
         """ We can use e.g. < is Modifier(obj) > in poll functions """

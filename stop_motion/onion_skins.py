@@ -209,7 +209,7 @@ class OnionSkin():
             return
         # add the modifiers
         for name, json_path, modname in (
-                ("MeshKey", "modifier.json", Modifier.name),
+                ("MeshKey", "modifier.json", Modifier.name()),
                 ("Materialize", "materializer.json", "Materializer")):
             node_group = json_nodes.read_node(
                 name, os.path.join(os.path.dirname(__file__), json_path))

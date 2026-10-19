@@ -76,7 +76,7 @@ class OBJECT_OT_add_stop_motion(bpy.types.Operator):
 
         # Create and Populate Modifiers
         for name, json_path, modname in (
-                ("MeshKey", "modifier.json", Modifier.name),
+                ("MeshKey", "modifier.json", Modifier.name()),
                 ("Realize", "realizer.json", "Realizer")):
             node_group = json_nodes.read_node(
                 name, os.path.join(os.path.dirname(__file__), json_path))

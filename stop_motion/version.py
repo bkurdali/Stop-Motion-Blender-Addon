@@ -23,23 +23,22 @@ Central class to provide version tagging and naming of blender data,
 will allow for version updates down the road
 TODO current version depends on object names; should be fixed to an ID
 TODO once fixed, need a do_versions type function to update old files
+TODO stop_motion doesn't appear in the mapping on some platforms?
 """
 import addon_utils
 
-SUB = 0
-# bl_info = addon_utils.modules().mapping['stop_motion'].bl_info
-# MAJOR, MINOR, SUB = bl_info['version']
-MAJOR, MINOR, SUB = (1,5,1)
-NAME = "STPMO"
+MAJOR, MINOR, SUB = (1,5,1) # To be overwritten by addon_info
 
+NAME = "STPMO"
 ONION = "onion"
 MAIN_OBJECT = "main"
-
 FRAME = "frame"
 
 
-def get():
-    return (MAJOR, MINOR, SUB)
+def addon_info():
+    subversion = 0
+    bl_info = addon_utils.modules().mapping['stop_motion'].bl_info
+    MAJOR, MINOR, SUB = bl_info['version']
 
 
 def onion_prefix():
@@ -47,6 +46,7 @@ def onion_prefix():
 
 
 def tag(name=NAME):
+    addon_info()
     return (name, {'major': MAJOR, 'minor':MINOR})
 
 
@@ -62,6 +62,7 @@ def main_tag(item):
     item_tag = tag()
     item_tag[1]['type'] = MAIN_OBJECT
     item_tag[1]['name'] = item.name
+    item_tag[1]['id'] = item.name
     item[item_tag[0]] = item_tag[1]
 
 
@@ -105,9 +106,7 @@ onion_skin_material_name = onion_skin_instance
 
 
 def modifier_name():
-    return "StopMotion" # TODO go back to bl_info
     bl_info = addon_utils.modules().mapping['stop_motion'].bl_info
-
     return bl_info['name'].replace(" ","")
 
 # ID fixing functions (object names but will be replaced by hashes)

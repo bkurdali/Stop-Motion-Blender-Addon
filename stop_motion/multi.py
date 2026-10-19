@@ -37,13 +37,6 @@ import bpy
 import os
 from .modifier_data import Modifier, StopMotionOperator
 
-"""
-TODO:
-materials multi set
-disable onion skins if active
-
-"""
-
 COLLECTION_NAME = "MULTITEMP"
 
 
