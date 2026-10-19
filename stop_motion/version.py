@@ -27,7 +27,7 @@ TODO stop_motion doesn't appear in the mapping on some platforms?
 """
 import addon_utils
 
-MAJOR, MINOR, SUB = (1,5,1) # To be overwritten by addon_info
+MAJOR, MINOR, SUB = (1,6,0) # To be overwritten by addon_info
 
 NAME = "STPMO"
 ONION = "onion"
